@@ -4,7 +4,7 @@
     <dimen name="video_item_divider">16dp</dimen>
     <dimen name="video_item_divider_small">4dp</dimen>
 
-    <dimen name="app_bar_layout_height">202.5dp</dimen>
+    <dimen name="app_bar_layout_height">200dp</dimen>
     <dimen name="app_bar_scrim_height">100dp</dimen>
     <dimen name="detail_text_size">16sp</dimen>
 
@@ -31,8 +31,6 @@
     <dimen name="review_author_text_size">24sp</dimen>
     <dimen name="review_content_height">171dp</dimen>
     <dimen name="review_content_text_size">14sp</dimen>
-    <dimen name="review_view_more_height">48dp</dimen>
 
-    <dimen name="image_size">48dp</dimen>
     <dimen name="image_padding">12dp</dimen>
 </resources>

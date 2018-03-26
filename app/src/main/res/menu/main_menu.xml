@@ -5,11 +5,11 @@
         android:id="@+id/sort_spinner"
         android:title="@string/action_sort"
         app:actionViewClass="android.widget.Spinner"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_more_vert_24dp"
         android:title="@string/action_settings"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 </menu>

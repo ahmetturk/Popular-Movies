@@ -3,6 +3,7 @@ package com.ahmetroid.popularmovies.activity;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -16,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -75,6 +77,16 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
+
+        // Making Collapsing Toolbar Width / Height Ratio = 3 / 2
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            DisplayMetrics displaymetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+            int width = displaymetrics.widthPixels;
+            mBinding.collapsingToolbar.getLayoutParams().height = (int) Math.round(width / 1.5);
+        }
+        // END OF Making Collapsing Toolbar Width / Height Ratio = 3 / 2
+
         mDatabase = PopMovDatabase.getInstance(this);
 
         mApiClient = ServiceGenerator.createService(ApiClient.class);
@@ -117,7 +129,7 @@ public class DetailActivity extends AppCompatActivity {
                 Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                     @Override
                     public void onGenerated(@NonNull Palette palette) {
-                        color = palette.getMutedColor(R.attr.colorPrimary) | 0xFF000000;
+                        color = palette.getVibrantColor(R.attr.colorPrimary) | 0xFF000000;
                         mBinding.collapsingToolbar.setContentScrimColor(color);
                         mBinding.collapsingToolbar.setStatusBarScrimColor(color);
                     }

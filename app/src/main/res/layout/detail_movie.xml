@@ -15,8 +15,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/poster"
@@ -30,17 +29,16 @@
             android:transitionName="@string/movie_transition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="UnusedAttribute" />
+            tools:ignore="UnusedAttribute"
+            tools:src="@mipmap/ic_launcher" />
 
         <TextView
             android:id="@+id/movieTitleTv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_medium"
-            android:layout_marginLeft="@dimen/margin_medium"
-            android:layout_marginRight="@dimen/margin_medium"
             android:layout_marginStart="@dimen/margin_medium"
-            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginTop="24dp"
             android:text="@{movie.movieTitle}"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             app:layout_constraintEnd_toEndOf="parent"
@@ -48,33 +46,45 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="The Maze Runner" />
 
-        <TextView
+        <ImageView
             android:id="@+id/releaseDateLabel"
-            style="@style/DetailLabel"
-            android:text="@string/release_date"
-            app:layout_constraintStart_toEndOf="@+id/poster"
-            app:layout_constraintTop_toBottomOf="@+id/movieTitleTv" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/release_date"
+            app:layout_constraintStart_toStartOf="@+id/movieTitleTv"
+            app:layout_constraintTop_toBottomOf="@+id/movieTitleTv"
+            app:srcCompat="@drawable/ic_event_note_24dp" />
 
         <TextView
             android:id="@+id/releaseDateTv"
             style="@style/DetailText"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:text="@{presenter.formatReleaseDate(movie.releaseDate)}"
-            app:layout_constraintStart_toEndOf="@+id/poster"
+            app:layout_constraintBottom_toTopOf="@+id/releaseDateLabel"
+            app:layout_constraintStart_toEndOf="@+id/releaseDateLabel"
             app:layout_constraintTop_toBottomOf="@+id/releaseDateLabel"
             tools:text="2014-09-10" />
 
-        <TextView
+        <ImageView
             android:id="@+id/userRatingLabel"
-            style="@style/DetailLabel"
-            android:text="@string/user_rating"
-            app:layout_constraintStart_toEndOf="@+id/poster"
-            app:layout_constraintTop_toBottomOf="@+id/releaseDateTv" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/user_rating"
+            app:layout_constraintStart_toStartOf="@+id/movieTitleTv"
+            app:layout_constraintTop_toBottomOf="@+id/releaseDateLabel"
+            app:srcCompat="@drawable/ic_thumb_up_24dp" />
 
         <TextView
             android:id="@+id/userRatingTv"
             style="@style/DetailText"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:text="@{@string/user_rating_text(movie.userRating)}"
-            app:layout_constraintStart_toEndOf="@+id/poster"
+            app:layout_constraintBottom_toTopOf="@+id/userRatingLabel"
+            app:layout_constraintStart_toEndOf="@+id/userRatingLabel"
             app:layout_constraintTop_toBottomOf="@+id/userRatingLabel"
             tools:text="7/10" />
 
