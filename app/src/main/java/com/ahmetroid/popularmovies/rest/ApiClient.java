@@ -20,6 +20,14 @@ public interface ApiClient {
     Call<ApiResponse<Movie>> getPopularMovies(@Query("language") String language,
                                               @Query("page") String page);
 
+    @GET("movie/now_playing")
+    Call<ApiResponse<Movie>> getNowPlayingMovies(@Query("language") String language,
+                                                 @Query("page") String page);
+
+    @GET("movie/upcoming")
+    Call<ApiResponse<Movie>> getUpcomingMovies(@Query("language") String language,
+                                               @Query("page") String page);
+
     @GET("movie/{id}/reviews")
     Call<ApiResponse<Review>> getReviews(@Path("id") String id);
 

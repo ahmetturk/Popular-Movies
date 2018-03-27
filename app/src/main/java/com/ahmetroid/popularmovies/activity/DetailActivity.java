@@ -8,13 +8,11 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -126,14 +124,14 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 mBinding.backdrop.setImageBitmap(bitmap);
-                Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                    @Override
-                    public void onGenerated(@NonNull Palette palette) {
-                        color = palette.getVibrantColor(R.attr.colorPrimary) | 0xFF000000;
-                        mBinding.collapsingToolbar.setContentScrimColor(color);
-                        mBinding.collapsingToolbar.setStatusBarScrimColor(color);
-                    }
-                });
+//                Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+//                    @Override
+//                    public void onGenerated(@NonNull Palette palette) {
+//                        color = palette.getVibrantColor(R.attr.colorPrimary) | 0xFF000000;
+//                        mBinding.collapsingToolbar.setContentScrimColor(color);
+//                        mBinding.collapsingToolbar.setStatusBarScrimColor(color);
+//                    }
+//                });
             }
 
             @Override

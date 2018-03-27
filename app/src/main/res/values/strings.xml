@@ -33,7 +33,7 @@
     <string name="review">Review</string>
 
     <string name="no_internet">No internet connection, swipe to refresh</string>
-    <string name="no_favorite">When you add a movie to favorites, you can find it here even if you don\'t have an internet. To add a movie to favorites, tap star</string>
+    <string name="no_favorite">You have no favorite movie. When you add a movie to favorites, you can find it here even if you don\'t have an internet.</string>
     <string name="not_this_star">Enter a movie, then click the star there :)</string>
     <string name="no_app">There is not any sharing app installed on device</string>
 

@@ -13,9 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ahmetroid.popularmovies.MovieListFragment;
 import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.activity.DetailActivity;
-import com.ahmetroid.popularmovies.activity.MainActivity;
 import com.ahmetroid.popularmovies.data.AppDatabase;
 import com.ahmetroid.popularmovies.data.PopMovPreferences;
 import com.ahmetroid.popularmovies.databinding.ItemMovieBinding;
@@ -35,12 +35,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private List<Movie> mList;
     private ListenerMovieAdapter mListener;
     private Executor executor;
+    private int mSorting;
 
-    public MovieAdapter(Activity activity, ListenerMovieAdapter listener, AppDatabase database) {
+    public MovieAdapter(Activity activity, ListenerMovieAdapter listener, AppDatabase database, int sorting) {
         this.mActivity = activity;
         this.mListener = listener;
         this.mDatabase = database;
         this.executor = new MyExecutor();
+        this.mSorting = sorting;
     }
 
     @Override
@@ -180,7 +182,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 binding.favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
                 snackBarText = mActivity.getString(R.string.remove_favorite);
 
-                if (PopMovPreferences.getSorting(mActivity) == MainActivity.FAVORITES) {
+                if (mSorting == MovieListFragment.FAVORITES) {
                     mList.remove(position);
                     notifyItemRemoved(position);
                     if (mList.isEmpty()) {
