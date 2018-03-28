@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Film Rehberi</string>
+    <string name="app_name">Cinemate</string>
     <string name="action_settings">Ayarlar</string>
     <string name="action_share">Paylaş</string>
     <string name="action_sort">Sıralama</string>
@@ -26,4 +26,33 @@
     <string name="review">Yorum</string>
     <string name="user_rating">Kullanıcı Puanı</string>
     <string name="videos">Fragmanlar</string>
+    <string name="action_search">Ara</string>
+    <string name="movie_menu">Filmler - Listeler</string>
+    <string name="movie_genre">Filmler - Türlere Göre</string>
+    <string name="about">Hakkında</string>
+    <!--For Movie List Activity-->
+    <string name="popular">Popüler</string>
+    <string name="top_rated">Yüksek Puanlı</string>
+    <string name="now_playing">Vizyonda</string>
+    <string name="upcoming">Yakında</string>
+    <string name="favorites">Favoriler</string>
+    <!--For Movie Genre Activity-->
+    <string name="action">Aksiyon</string>
+    <string name="adventure">Macera</string>
+    <string name="animation">Animasyon</string>
+    <string name="comedy">Komedi</string>
+    <string name="crime">Suç</string>
+    <string name="drama">Dram</string>
+    <string name="family">Aile</string>
+    <string name="fantasy">Fantastik</string>
+    <string name="history">Tarih</string>
+    <string name="horror">Korku</string>
+    <string name="music">Müzik</string>
+    <string name="mystery">Gizem</string>
+    <string name="romance">Romantik</string>
+    <string name="science_fiction">Bilim-Kurgu</string>
+    <string name="tv_movie">TV film</string>
+    <string name="thriller">Gerilim</string>
+    <string name="war">Savaş</string>
+    <string name="western">Vahşi Batı</string>
 </resources>

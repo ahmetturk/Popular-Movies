@@ -1,29 +1,30 @@
 package com.ahmetroid.popularmovies.adapter;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.ahmetroid.popularmovies.MovieListFragment;
 
-public class MovieListPager extends FragmentPagerAdapter {
+import java.util.ArrayList;
 
-    private Context mContext;
+public class MovieListPager extends FragmentStatePagerAdapter {
 
-    public MovieListPager(FragmentManager fm, Context context) {
-        super(fm);
-        mContext = context;
+    private ArrayList<PagerItem> mPagerItems;
+
+    public MovieListPager(FragmentManager fragmentManager, ArrayList<PagerItem> pagerItems) {
+        super(fragmentManager);
+        mPagerItems = pagerItems;
     }
 
     @Override
     public Fragment getItem(int position) {
-
         Fragment fragment = new MovieListFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putInt(MovieListFragment.SORTING, position);
+        bundle.putInt(MovieListFragment.SORTING_CODE,
+                mPagerItems.get(position).getSortingCode());
 
         fragment.setArguments(bundle);
 
@@ -32,23 +33,12 @@ public class MovieListPager extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 5;
+        return mPagerItems.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        String title = null;
-        if (position == 0) {
-            title = "POPÜLER";
-        } else if (position == 1) {
-            title = "YÜKSEK PUANLI";
-        } else if (position == 2) {
-            title = "VİZYONDA";
-        } else if (position == 3) {
-            title = "YAKINDA";
-        } else if (position == 4) {
-            title = "FAVORİLER";
-        }
-        return title;
+        return mPagerItems.get(position).getTitle();
     }
+
 }

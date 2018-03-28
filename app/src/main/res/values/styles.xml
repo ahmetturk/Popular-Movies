@@ -47,4 +47,8 @@
         <item name="android:textSize">@dimen/detail_text_size</item>
     </style>
 
+    <style name="AppThemeToolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="colorAccent">#FFFFFF</item>
+    </style>
+
 </resources>

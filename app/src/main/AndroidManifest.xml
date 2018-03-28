@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.MovieListActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppThemeNoActionBar">
             <intent-filter>
@@ -22,21 +22,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.DetailActivity"
-            android:parentActivityName=".activity.MainActivity"
-            android:theme="@style/AppThemeTranslucent">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+            android:name=".activity.MovieGenreActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/AppThemeNoActionBar">
         </activity>
         <activity
-            android:name=".activity.AboutActivity"
-            android:parentActivityName=".activity.MainActivity"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+            android:name=".activity.DetailActivity"
+            android:theme="@style/AppThemeTranslucent">
         </activity>
+        <activity android:name=".activity.AboutActivity" />
         <activity android:name=".activity.ReviewActivity" />
     </application>
 

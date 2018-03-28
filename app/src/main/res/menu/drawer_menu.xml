@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/group_movies"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_movie_list"
+            android:icon="@drawable/ic_movie"
+            android:title="@string/movie_menu" />
+        <item
+            android:id="@+id/nav_movie_genre"
+            android:icon="@drawable/ic_movie"
+            android:title="@string/movie_genre" />
+    </group>
+
+    <group android:id="@+id/group_others">
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info_outline"
+            android:title="@string/about" />
+    </group>
+</menu>

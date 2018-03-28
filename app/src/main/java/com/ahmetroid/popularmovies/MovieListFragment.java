@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -26,10 +27,12 @@ import com.ahmetroid.popularmovies.model.ApiResponse;
 import com.ahmetroid.popularmovies.model.Movie;
 import com.ahmetroid.popularmovies.rest.ApiClient;
 import com.ahmetroid.popularmovies.rest.ServiceGenerator;
+import com.ahmetroid.popularmovies.utils.Codes;
 import com.ahmetroid.popularmovies.utils.GridItemDecoration;
 import com.ahmetroid.popularmovies.utils.MyExecutor;
 import com.ahmetroid.popularmovies.utils.RecyclerViewScrollListener;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -44,9 +47,12 @@ import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
  */
 public class MovieListFragment extends Fragment implements MovieAdapter.ListenerMovieAdapter {
 
-    // popular = 0, highest rated = 1, favorites = 2
-    public static final int FAVORITES = 4;
-    public static final String SORTING = "sorting";
+    public static final String SORTING_CODE = "sorting_code";
+
+    private static final String BUNDLE_MOVIES = "movies";
+    private static final String BUNDLE_PAGE = "page";
+    private static final String BUNDLE_COUNT = "count";
+    private static final String BUNDLE_RECYCLER = "recycler";
 
     private FragmentMovieListBinding mBinding;
     private AppDatabase mDatabase;
@@ -56,6 +62,7 @@ public class MovieListFragment extends Fragment implements MovieAdapter.Listener
     private ApiClient mApiClient;
     private Executor executor;
     private int mSorting;
+    private Bundle mSavedInstanceState;
 
     public MovieListFragment() {
         // Required empty public constructor
@@ -65,12 +72,14 @@ public class MovieListFragment extends Fragment implements MovieAdapter.Listener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mSavedInstanceState = savedInstanceState;
+
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_movie_list, container, false);
         mBinding.setPresenter(this);
         mDatabase = PopMovDatabase.getInstance(getContext());
 
-        mSorting = getArguments().getInt(SORTING, 0);
+        mSorting = getArguments().getInt(SORTING_CODE, 0);
 
         mApiClient = ServiceGenerator.createService(ApiClient.class);
 
@@ -113,6 +122,14 @@ public class MovieListFragment extends Fragment implements MovieAdapter.Listener
         mMoviesAdapter.refreshFavorite();
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList(BUNDLE_MOVIES, mMoviesAdapter.getList());
+        outState.putInt(BUNDLE_PAGE, mScrollListener.getPage());
+        outState.putInt(BUNDLE_COUNT, mScrollListener.getCount());
+        outState.putParcelable(BUNDLE_RECYCLER, mGridLayoutManager.onSaveInstanceState());
+        super.onSaveInstanceState(outState);
+    }
 
     /**
      * populates UI,
@@ -125,7 +142,7 @@ public class MovieListFragment extends Fragment implements MovieAdapter.Listener
      */
     private void populateUI() {
         mMoviesAdapter.clearMoviesList();
-        if (mSorting == FAVORITES) {
+        if (mSorting == Codes.FAVORITES) {
             // FAVORITES SELECTED
             mBinding.moviesList.clearOnScrollListeners();
             mBinding.swipeRefreshLayout.setEnabled(false);
@@ -151,9 +168,25 @@ public class MovieListFragment extends Fragment implements MovieAdapter.Listener
             });
 
         } else {
-            // NOT FAVORITES SELECTED AND THERE IS NOT SAVED DATA
-            mScrollListener.resetState();
-            fetchNewMovies(1, mSorting);
+            if (mSavedInstanceState != null) {
+                // NOT FAVORITES SELECTED BUT THERE IS SAVED DATA
+                mScrollListener.setState(
+                        mSavedInstanceState.getInt(BUNDLE_PAGE),
+                        mSavedInstanceState.getInt(BUNDLE_COUNT));
+
+                ArrayList<Movie> list = mSavedInstanceState.getParcelableArrayList(BUNDLE_MOVIES);
+                if ((list == null || list.isEmpty()) && !isOnline()) {
+                    showNoInternetStatus();
+                }
+                mMoviesAdapter.addMoviesList(list);
+                mGridLayoutManager
+                        .onRestoreInstanceState(mSavedInstanceState.getParcelable(BUNDLE_RECYCLER));
+                mBinding.swipeRefreshLayout.setRefreshing(false);
+            } else {
+                // NOT FAVORITES SELECTED AND THERE IS NOT SAVED DATA
+                mScrollListener.resetState();
+                fetchNewMovies(1, mSorting);
+            }
             mBinding.moviesList.addOnScrollListener(mScrollListener);
         }
     }
@@ -163,34 +196,36 @@ public class MovieListFragment extends Fragment implements MovieAdapter.Listener
      * fetch movies from the TheMovieDB API
      *
      * @param page    the number of the page that will be fetched from API
-     * @param sorting selected sorting method by user
+     * @param sortingCode selected sortingCode method by user
      *                0 = most popular
      *                1 = highest rated
      */
-    private void fetchNewMovies(int page, int sorting) {
+    private void fetchNewMovies(int page, int sortingCode) {
         Call<ApiResponse<Movie>> call;
 
-        switch (sorting) {
-            case 0:
-                call = mApiClient.getPopularMovies(getString(R.string.language),
-                        String.valueOf(page));
-                break;
-
-            case 1:
-                call = mApiClient.getTopRatedMovies(getString(R.string.language),
-                        String.valueOf(page));
-                break;
-
-            case 2:
-                call = mApiClient.getNowPlayingMovies(getString(R.string.language),
-                        String.valueOf(page));
-                break;
-
-            case 3:
-            default:
-                call = mApiClient.getUpcomingMovies(getString(R.string.language),
-                        String.valueOf(page));
-                break;
+        if (sortingCode < 4) {
+            switch (sortingCode) {
+                case Codes.POPULAR:
+                    call = mApiClient.getPopularMovies(getString(R.string.language),
+                            String.valueOf(page));
+                    break;
+                case Codes.TOP_RATED:
+                    call = mApiClient.getTopRatedMovies(getString(R.string.language),
+                            String.valueOf(page));
+                    break;
+                case Codes.NOW_PLAYING:
+                    call = mApiClient.getNowPlayingMovies(getString(R.string.language),
+                            String.valueOf(page));
+                    break;
+                case Codes.UPCOMING:
+                default:
+                    call = mApiClient.getUpcomingMovies(getString(R.string.language),
+                            String.valueOf(page));
+                    break;
+            }
+        } else {
+            call = mApiClient.getGenreMovies(getString(R.string.language),
+                    String.valueOf(page), Codes.getGenreCode(sortingCode));
         }
 
         if (!isOnline()) {
@@ -219,6 +254,7 @@ public class MovieListFragment extends Fragment implements MovieAdapter.Listener
             public void onFailure(Call<ApiResponse<Movie>> call, Throwable t) {
                 Toast.makeText(getContext(),
                         getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+                mBinding.swipeRefreshLayout.setRefreshing(false);
             }
         });
     }

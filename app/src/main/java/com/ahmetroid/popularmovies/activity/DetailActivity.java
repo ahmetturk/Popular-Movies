@@ -5,8 +5,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -39,7 +37,6 @@ import com.ahmetroid.popularmovies.rest.ServiceGenerator;
 import com.ahmetroid.popularmovies.utils.HorizontalItemDecoration;
 import com.ahmetroid.popularmovies.utils.MyExecutor;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -64,12 +61,10 @@ public class DetailActivity extends AppCompatActivity {
     private boolean isFavorite;
     private VideoAdapter mVideoAdapter;
     private ReviewAdapter mReviewAdapter;
-    private Target targetBackdrop;
     private Movie movie;
     private ApiClient mApiClient;
     private Executor executor;
     private int movieNumber;
-    private int color;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,33 +115,10 @@ public class DetailActivity extends AppCompatActivity {
      */
     private void populateUI() {
 
-        targetBackdrop = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                mBinding.backdrop.setImageBitmap(bitmap);
-//                Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-//                    @Override
-//                    public void onGenerated(@NonNull Palette palette) {
-//                        color = palette.getVibrantColor(R.attr.colorPrimary) | 0xFF000000;
-//                        mBinding.collapsingToolbar.setContentScrimColor(color);
-//                        mBinding.collapsingToolbar.setStatusBarScrimColor(color);
-//                    }
-//                });
-            }
-
-            @Override
-            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-            }
-        };
-
         Picasso.get()
                 .load("http://image.tmdb.org/t/p/w780" + movie.getBackdropPath())
-                .into(targetBackdrop);
+                .error(R.drawable.error)
+                .into(mBinding.backdrop);
 
         Picasso.get()
                 .load("http://image.tmdb.org/t/p/w342" + movie.getPosterPath())
@@ -365,7 +337,6 @@ public class DetailActivity extends AppCompatActivity {
                         ViewCompat.getTransitionName(view));
         intent.putExtra(ReviewActivity.REVIEW_INTENT_KEY, review);
         intent.putExtra(ReviewActivity.MOVIE_TITLE_KEY, movie.getOriginalTitle());
-        intent.putExtra(ReviewActivity.COLOR_ACTIONBAR_KEY, color);
         startActivity(intent, options.toBundle());
     }
 }

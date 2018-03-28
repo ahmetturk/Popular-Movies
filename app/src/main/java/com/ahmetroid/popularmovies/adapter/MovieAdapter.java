@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ahmetroid.popularmovies.MovieListFragment;
 import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.activity.DetailActivity;
 import com.ahmetroid.popularmovies.data.AppDatabase;
@@ -21,6 +20,7 @@ import com.ahmetroid.popularmovies.data.PopMovPreferences;
 import com.ahmetroid.popularmovies.databinding.ItemMovieBinding;
 import com.ahmetroid.popularmovies.model.MiniMovie;
 import com.ahmetroid.popularmovies.model.Movie;
+import com.ahmetroid.popularmovies.utils.Codes;
 import com.ahmetroid.popularmovies.utils.MyExecutor;
 import com.squareup.picasso.Picasso;
 
@@ -182,7 +182,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 binding.favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
                 snackBarText = mActivity.getString(R.string.remove_favorite);
 
-                if (mSorting == MovieListFragment.FAVORITES) {
+                if (mSorting == Codes.FAVORITES) {
                     mList.remove(position);
                     notifyItemRemoved(position);
                     if (mList.isEmpty()) {
