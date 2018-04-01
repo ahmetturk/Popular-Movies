@@ -5,15 +5,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.ahmetroid.popularmovies.MovieListFragment;
+import com.ahmetroid.popularmovies.ui.MovieListFragment;
 
 import java.util.ArrayList;
 
-public class MovieListPager extends FragmentStatePagerAdapter {
+public class MovieFragmentPager extends FragmentStatePagerAdapter {
 
     private ArrayList<PagerItem> mPagerItems;
 
-    public MovieListPager(FragmentManager fragmentManager, ArrayList<PagerItem> pagerItems) {
+    public MovieFragmentPager(FragmentManager fragmentManager, ArrayList<PagerItem> pagerItems) {
         super(fragmentManager);
         mPagerItems = pagerItems;
     }

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="presenter"
-            type="com.ahmetroid.popularmovies.activity.DetailActivity" />
+            type="com.ahmetroid.popularmovies.ui.DetailActivity" />
 
         <variable
             name="movie"
@@ -104,5 +105,14 @@
             android:onClick="@{() -> presenter.onClickFavoriteButton()}"
             app:layout_anchor="@+id/appbar"
             app:layout_anchorGravity="end|right|bottom" />
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            ads:adSize="SMART_BANNER"
+            ads:adUnitId="ca-app-pub-3758024742170084/7733651762" />
+
     </android.support.design.widget.CoordinatorLayout>
 </layout>

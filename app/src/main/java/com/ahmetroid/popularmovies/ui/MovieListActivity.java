@@ -1,4 +1,4 @@
-package com.ahmetroid.popularmovies.activity;
+package com.ahmetroid.popularmovies.ui;
 
 import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.adapter.PagerItem;

@@ -14,12 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ahmetroid.popularmovies.R;
-import com.ahmetroid.popularmovies.activity.DetailActivity;
 import com.ahmetroid.popularmovies.data.AppDatabase;
-import com.ahmetroid.popularmovies.data.PopMovPreferences;
+import com.ahmetroid.popularmovies.data.AppPreferences;
 import com.ahmetroid.popularmovies.databinding.ItemMovieBinding;
 import com.ahmetroid.popularmovies.model.MiniMovie;
 import com.ahmetroid.popularmovies.model.Movie;
+import com.ahmetroid.popularmovies.ui.DetailActivity;
 import com.ahmetroid.popularmovies.utils.Codes;
 import com.ahmetroid.popularmovies.utils.MyExecutor;
 import com.squareup.picasso.Picasso;
@@ -33,16 +33,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private Activity mActivity;
     private AppDatabase mDatabase;
     private List<Movie> mList;
-    private ListenerMovieAdapter mListener;
     private Executor executor;
     private int mSorting;
 
-    public MovieAdapter(Activity activity, ListenerMovieAdapter listener, AppDatabase database, int sorting) {
+    public MovieAdapter(Activity activity, int sortingCode) {
         this.mActivity = activity;
-        this.mListener = listener;
-        this.mDatabase = database;
+        this.mDatabase = AppDatabase.getDatabase(activity);
         this.executor = new MyExecutor();
-        this.mSorting = sorting;
+        this.mSorting = sortingCode;
     }
 
     @Override
@@ -67,7 +65,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return mList.size();
     }
 
-    public void clearMoviesList() {
+    public void clearList() {
         if (mList == null) {
             mList = new ArrayList<>();
         } else {
@@ -77,55 +75,45 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
     }
 
-    public void addMoviesList(List<Movie> moviesList) {
-        if (moviesList != null) {
-            int positionStart = mList.size();
-            mList.addAll(moviesList);
-            notifyItemRangeInserted(positionStart, moviesList.size());
-        }
+    public void addList(List<Movie> moviesList) {
+        int positionStart = mList.size();
+        mList.clear();
+
+        mList.addAll(moviesList);
+        notifyItemRangeInserted(positionStart, moviesList.size() - positionStart);
     }
 
-    public ArrayList<Movie> getList() {
-        return (ArrayList<Movie>) mList;
-    }
-
-    // using for refreshing favorite star when back from detail activity
+    // using for refreshing favorite star when back from detail ui
     public void refreshFavorite() {
-        int movieNumber = PopMovPreferences.getChangedMovie(mActivity);
+        int movieNumber = AppPreferences.getChangedMovie(mActivity);
         if (movieNumber != -1) {
             notifyItemChanged(movieNumber);
-            PopMovPreferences.setChangedMovie(mActivity, -1);
+            AppPreferences.setChangedMovie(mActivity, -1);
         }
-    }
-
-    public interface ListenerMovieAdapter {
-        void onEmpty();
     }
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
-
-        public ItemMovieBinding binding;
-        public boolean isFavorite;
+        ItemMovieBinding binding;
+        boolean isFavorite;
 
         MovieAdapterViewHolder(ItemMovieBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind(final Movie movie) {
+        void bind(final Movie movie) {
             binding.setMovie(movie);
             binding.setPresenter(this);
 
             Picasso.get()
-                    .load("http://image.tmdb.org/t/p/w342" + movie.getPosterPath())
-                    .placeholder(R.drawable.placeholder)
+                    .load(Codes.POSTER_URL + movie.posterPath)
                     .error(R.drawable.error)
                     .into(binding.movieItemIv);
 
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    final MiniMovie miniMovie = mDatabase.movieDao().getMovieById(movie.getMovieId());
+                    final MiniMovie miniMovie = mDatabase.movieDao().getMovieById(movie.movieId);
 
                     Handler handler = new Handler(Looper.getMainLooper());
                     handler.post(new Runnable() {
@@ -145,9 +133,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
 
         /**
-         * starts detail activity for this movie
+         * starts detail ui for this movie
          * setChangedMovie is called to refresh the favorite star icon of this movie
-         * when returning back to main activity
+         * when returning back to main ui
          */
         public void openMovieDetail(Movie movie) {
             int movieNumber = getAdapterPosition();
@@ -185,9 +173,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 if (mSorting == Codes.FAVORITES) {
                     mList.remove(position);
                     notifyItemRemoved(position);
-                    if (mList.isEmpty()) {
-                        mListener.onEmpty();
-                    }
                 }
 
             } else {

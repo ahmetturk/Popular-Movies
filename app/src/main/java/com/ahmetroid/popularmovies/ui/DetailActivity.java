@@ -1,4 +1,4 @@
-package com.ahmetroid.popularmovies.activity;
+package com.ahmetroid.popularmovies.ui;
 
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
@@ -23,8 +23,7 @@ import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.adapter.ReviewAdapter;
 import com.ahmetroid.popularmovies.adapter.VideoAdapter;
 import com.ahmetroid.popularmovies.data.AppDatabase;
-import com.ahmetroid.popularmovies.data.PopMovDatabase;
-import com.ahmetroid.popularmovies.data.PopMovPreferences;
+import com.ahmetroid.popularmovies.data.AppPreferences;
 import com.ahmetroid.popularmovies.databinding.ActivityDetailBinding;
 import com.ahmetroid.popularmovies.model.ApiResponse;
 import com.ahmetroid.popularmovies.model.MiniMovie;
@@ -34,8 +33,10 @@ import com.ahmetroid.popularmovies.model.Review;
 import com.ahmetroid.popularmovies.model.Video;
 import com.ahmetroid.popularmovies.rest.ApiClient;
 import com.ahmetroid.popularmovies.rest.ServiceGenerator;
+import com.ahmetroid.popularmovies.utils.Codes;
 import com.ahmetroid.popularmovies.utils.HorizontalItemDecoration;
 import com.ahmetroid.popularmovies.utils.MyExecutor;
+import com.google.android.gms.ads.AdRequest;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -50,8 +51,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
-    public static final String DETAIL_INTENT_KEY = "com.example.ahmet.popularmovies.activity.detail";
-    public static final String MOVIE_NUMBER_KEY = "com.example.ahmet.popularmovies.activity.movie_number";
+    public static final String DETAIL_INTENT_KEY = "com.example.ahmet.popularmovies.ui.detail";
+    public static final String MOVIE_NUMBER_KEY = "com.example.ahmet.popularmovies.ui.movie_number";
 
     private static final String BUNDLE_VIDEOS = "videos";
     private static final String BUNDLE_REVIEWS = "reviews";
@@ -71,6 +72,10 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+        mBinding.adView.loadAd(adRequest);
+
         // Making Collapsing Toolbar Width / Height Ratio = 3 / 2
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -80,7 +85,7 @@ public class DetailActivity extends AppCompatActivity {
         }
         // END OF Making Collapsing Toolbar Width / Height Ratio = 3 / 2
 
-        mDatabase = PopMovDatabase.getInstance(this);
+        mDatabase = AppDatabase.getDatabase(this);
 
         mApiClient = ServiceGenerator.createService(ApiClient.class);
         executor = new MyExecutor();
@@ -116,20 +121,19 @@ public class DetailActivity extends AppCompatActivity {
     private void populateUI() {
 
         Picasso.get()
-                .load("http://image.tmdb.org/t/p/w780" + movie.getBackdropPath())
+                .load(Codes.BACKDROP_URL + movie.backdropPath)
                 .error(R.drawable.error)
                 .into(mBinding.backdrop);
 
         Picasso.get()
-                .load("http://image.tmdb.org/t/p/w342" + movie.getPosterPath())
-                .placeholder(R.drawable.placeholder)
+                .load(Codes.POSTER_URL + movie.posterPath)
                 .error(R.drawable.error)
                 .into(mBinding.movieDetails.poster);
 
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                MiniMovie miniMovie = mDatabase.movieDao().getMovieById(movie.getMovieId());
+                MiniMovie miniMovie = mDatabase.movieDao().getMovieById(movie.movieId);
 
                 if (miniMovie != null) {
                     isFavorite = true;
@@ -162,13 +166,13 @@ public class DetailActivity extends AppCompatActivity {
             mVideoAdapter.addVideosList(savedInstanceState.
                     <Video>getParcelableArrayList(BUNDLE_VIDEOS));
         } else {
-            Call<ApiResponse<Video>> call = mApiClient.getVideos(movie.getMovieId());
+            Call<ApiResponse<Video>> call = mApiClient.getVideos(movie.movieId);
 
             call.enqueue(new Callback<ApiResponse<Video>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<Video>> call,
                                        Response<ApiResponse<Video>> response) {
-                    List<Video> result = response.body().getResults();
+                    List<Video> result = response.body().results;
                     mVideoAdapter.addVideosList(result);
                     if (result.size() == 0) {
                         mBinding.movieVideos.videosLabel.setVisibility(View.GONE);
@@ -203,13 +207,13 @@ public class DetailActivity extends AppCompatActivity {
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_REVIEWS)) {
             mReviewAdapter.addReviewsList(savedInstanceState.<Review>getParcelableArrayList(BUNDLE_REVIEWS));
         } else {
-            Call<ApiResponse<Review>> call = mApiClient.getReviews(movie.getMovieId());
+            Call<ApiResponse<Review>> call = mApiClient.getReviews(movie.movieId);
 
             call.enqueue(new Callback<ApiResponse<Review>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<Review>> call,
                                        Response<ApiResponse<Review>> response) {
-                    List<Review> result = response.body().getResults();
+                    List<Review> result = response.body().results;
                     mReviewAdapter.addReviewsList(result);
                     if (result.size() == 0) {
                         mBinding.movieReviews.reviewsLabel.setVisibility(View.GONE);
@@ -230,7 +234,7 @@ public class DetailActivity extends AppCompatActivity {
      * adding favorite means adds it to sql database
      */
     public void onClickFavoriteButton() {
-        PopMovPreferences.setChangedMovie(this, movieNumber);
+        AppPreferences.setChangedMovie(this, movieNumber);
 
         String snackBarText;
         if (isFavorite) {
@@ -267,7 +271,7 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.share:
-                String shareText = "https://www.themoviedb.org/movie/" + movie.getMovieId();
+                String shareText = "https://www.themoviedb.org/movie/" + movie.movieId;
                 ShareCompat.IntentBuilder intentBuilder = ShareCompat.IntentBuilder.from(this)
                         .setText(shareText)
                         .setType("text/plain");
@@ -311,7 +315,7 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<MovieDetail> call, Response<MovieDetail> response) {
                 try {
-                    String plotSynopsis = response.body().getPlotSynopsis();
+                    String plotSynopsis = response.body().plotSynopsis;
                     mBinding.movieDetails.plotSynopsisTv.setText(plotSynopsis);
                 } catch (NullPointerException e) {
                     Toast.makeText(DetailActivity.this,
@@ -336,7 +340,7 @@ public class DetailActivity extends AppCompatActivity {
                         view,
                         ViewCompat.getTransitionName(view));
         intent.putExtra(ReviewActivity.REVIEW_INTENT_KEY, review);
-        intent.putExtra(ReviewActivity.MOVIE_TITLE_KEY, movie.getOriginalTitle());
+        intent.putExtra(ReviewActivity.MOVIE_TITLE_KEY, movie.originalTitle);
         startActivity(intent, options.toBundle());
     }
 }

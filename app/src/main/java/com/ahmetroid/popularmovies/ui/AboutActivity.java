@@ -1,4 +1,4 @@
-package com.ahmetroid.popularmovies.activity;
+package com.ahmetroid.popularmovies.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.ahmetroid.popularmovies.BuildConfig;
 import com.ahmetroid.popularmovies.R;
 
 import mehdi.sakout.aboutpage.AboutPage;
@@ -17,17 +18,17 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Element versionElement = new Element();
-        versionElement.setTitle("Version 1.1");
+        versionElement.setTitle("Version " + BuildConfig.VERSION_NAME);
 
         View aboutPage = new AboutPage(this)
                 .isRTL(false)
                 .setImage(R.drawable.ic_themoviedb)
                 .setDescription(getString(R.string.description))
-                .addItem(versionElement)
-                .addEmail("ahmetturk.pc@gmail.com")
-                .addWebsite("http://www.ahmetroid.com/")
+                .addEmail("cinemateapp.tr@gmail.com")
+                .addInstagram("cinemateapp")
                 .addPlayStore("com.ahmetroid.popularmovies")
                 .addGitHub("ahmetturk")
+                .addItem(versionElement)
                 .create();
 
         setContentView(aboutPage);

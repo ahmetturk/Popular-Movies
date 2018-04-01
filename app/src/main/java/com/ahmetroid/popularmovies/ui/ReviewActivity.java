@@ -1,4 +1,4 @@
-package com.ahmetroid.popularmovies.activity;
+package com.ahmetroid.popularmovies.ui;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -13,8 +13,8 @@ import com.ahmetroid.popularmovies.model.Review;
 
 public class ReviewActivity extends AppCompatActivity {
 
-    public static final String REVIEW_INTENT_KEY = "com.ahmetroid.popularmovies.activity.review";
-    public static final String MOVIE_TITLE_KEY = "com.ahmetroid.popularmovies.activity.movie_title";
+    public static final String REVIEW_INTENT_KEY = "com.ahmetroid.popularmovies.ui.review";
+    public static final String MOVIE_TITLE_KEY = "com.ahmetroid.popularmovies.ui.movie_title";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

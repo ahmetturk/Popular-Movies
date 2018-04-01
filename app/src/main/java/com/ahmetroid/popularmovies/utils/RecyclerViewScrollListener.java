@@ -26,17 +26,16 @@ abstract public class RecyclerViewScrollListener extends RecyclerView.OnScrollLi
             previousTotalItemCount = totalItemCount;
         }
 
-        int visibleThreshold = 6;
+        int visibleThreshold = 2;
         if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
-            onLoadMore(page);
-            page++;
+            onLoadMore(++page);
             loading = true;
         }
     }
 
     public void resetState() {
-        this.page = 2;
-        this.previousTotalItemCount = 10;
+        this.page = 1;
+        this.previousTotalItemCount = 0;
         this.loading = true;
     }
 
@@ -54,5 +53,5 @@ abstract public class RecyclerViewScrollListener extends RecyclerView.OnScrollLi
         return page;
     }
 
-    public abstract void onLoadMore(int page);
+    protected abstract void onLoadMore(int page);
 }

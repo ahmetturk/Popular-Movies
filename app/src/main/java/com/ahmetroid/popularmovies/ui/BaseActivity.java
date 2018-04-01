@@ -1,4 +1,4 @@
-package com.ahmetroid.popularmovies.activity;
+package com.ahmetroid.popularmovies.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,44 +6,55 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ahmetroid.popularmovies.R;
-import com.ahmetroid.popularmovies.adapter.MovieListPager;
+import com.ahmetroid.popularmovies.adapter.MovieFragmentPager;
 import com.ahmetroid.popularmovies.adapter.PagerItem;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
 
+import static com.ahmetroid.popularmovies.utils.Codes.ADMOB_APP_ID;
+
 public abstract class BaseActivity extends AppCompatActivity {
 
+    private static final String BUNDLE_SELECTED = "selected";
+
     private DrawerLayout mDrawerLayout;
-    private TabLayout mTabLayout;
-    private ViewPager mViewPager;
-    private MovieListPager mPagerAdapter;
+    private int mSelected;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
 
+        MobileAds.initialize(this, ADMOB_APP_ID);
+
+        AdView adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
+        adView.loadAd(adRequest);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mPagerAdapter = new MovieListPager(getSupportFragmentManager(), getPagerItems());
+        MovieFragmentPager pagerAdapter = new MovieFragmentPager(getSupportFragmentManager(), getPagerItems());
 
-        mViewPager = findViewById(R.id.view_pager);
-        mViewPager.setAdapter(mPagerAdapter);
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(pagerAdapter);
 
-        mTabLayout = findViewById(R.id.tab_layout);
-        mTabLayout.setupWithViewPager(mViewPager);
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(viewPager);
 
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
@@ -61,9 +72,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                         switch (menuItem.getItemId()) {
                             case R.id.nav_movie_list:
                                 intent = new Intent(BaseActivity.this, MovieListActivity.class);
+                                mSelected = 0;
                                 break;
                             case R.id.nav_movie_genre:
                                 intent = new Intent(BaseActivity.this, MovieGenreActivity.class);
+                                mSelected = 1;
                                 break;
                             case R.id.nav_about:
                             default:
@@ -73,6 +86,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
                         mDrawerLayout.closeDrawers();
 
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
@@ -80,18 +94,28 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }
                 });
 
-        navigationView.setCheckedItem(getCheckedItem());
+        if (savedInstanceState == null) {
+            navigationView.setCheckedItem(getCheckedItem());
+        } else {
+            mSelected = savedInstanceState.getInt(BUNDLE_SELECTED);
+            navigationView.setCheckedItem(mSelected);
+        }
     }
 
-    public abstract ArrayList<PagerItem> getPagerItems();
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(BUNDLE_SELECTED, mSelected);
+        super.onSaveInstanceState(outState);
+    }
 
-    public abstract int getCheckedItem();
+    protected abstract ArrayList<PagerItem> getPagerItems();
+
+    protected abstract int getCheckedItem();
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        /*SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -103,7 +127,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 return false;
             }
-        });
+        });*/
         return true;
     }
 
@@ -112,6 +136,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            case R.id.action_search:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.dialog_message)
+                        .setTitle(R.string.dialog_title);
+                AlertDialog dialog = builder.create();
+                dialog.show();
                 return true;
         }
         return super.onOptionsItemSelected(item);

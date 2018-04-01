@@ -7,7 +7,7 @@
 
         <variable
             name="presenter"
-            type="com.ahmetroid.popularmovies.MovieListFragment" />
+            type="com.ahmetroid.popularmovies.ui.MovieListFragment" />
     </data>
 
     <android.support.constraint.ConstraintLayout

@@ -2,6 +2,15 @@ package com.ahmetroid.popularmovies.utils;
 
 public class Codes {
 
+    public static final String ADMOB_APP_ID = "ca-app-pub-3758024742170084~8867125254";
+
+    public static final String POSTER_URL = "http://image.tmdb.org/t/p/w342";
+    public static final String BACKDROP_URL = "http://image.tmdb.org/t/p/w780";
+
+    // internet status codes
+    public static final int SUCCESS = 0;
+    public static final int NO_INTERNET = 1;
+
     // Movie List Activity Codes
     public static final int POPULAR = 0;
     public static final int TOP_RATED = 1;
@@ -23,7 +32,6 @@ public class Codes {
     public static final int MYSTERY = 16;
     public static final int ROMANCE = 17;
     public static final int SCIENCE_FICTION = 18;
-    public static final int TV_MOVIE = 19;
     public static final int THRILLER = 20;
     public static final int WAR = 21;
     public static final int WESTERN = 22;
@@ -61,8 +69,6 @@ public class Codes {
                 return "10749";
             case Codes.SCIENCE_FICTION:
                 return "878";
-            case Codes.TV_MOVIE:
-                return "10770";
             case Codes.THRILLER:
                 return "53";
             case Codes.WAR:
