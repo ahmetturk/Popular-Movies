@@ -83,6 +83,15 @@
                     bind:movie="@{movie}"
                     bind:presenter="@{presenter}" />
 
+                <com.google.android.gms.ads.AdView
+                    android:id="@+id/adViewMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    ads:adSize="MEDIUM_RECTANGLE"
+                    ads:adUnitId="ca-app-pub-3758024742170084/4066250367" />
+
                 <include
                     android:id="@+id/movie_videos"
                     layout="@layout/detail_video" />

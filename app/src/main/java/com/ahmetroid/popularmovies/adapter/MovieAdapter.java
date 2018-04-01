@@ -2,6 +2,7 @@ package com.ahmetroid.popularmovies.adapter;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -19,14 +20,18 @@ import com.ahmetroid.popularmovies.data.AppPreferences;
 import com.ahmetroid.popularmovies.databinding.ItemMovieBinding;
 import com.ahmetroid.popularmovies.model.MiniMovie;
 import com.ahmetroid.popularmovies.model.Movie;
+import com.ahmetroid.popularmovies.ui.BaseActivity;
 import com.ahmetroid.popularmovies.ui.DetailActivity;
 import com.ahmetroid.popularmovies.utils.Codes;
 import com.ahmetroid.popularmovies.utils.MyExecutor;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
+
+import static com.ahmetroid.popularmovies.utils.Codes.getSortingName;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
@@ -35,12 +40,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private List<Movie> mList;
     private Executor executor;
     private int mSorting;
+    private FirebaseAnalytics firebaseAnalytics;
 
     public MovieAdapter(Activity activity, int sortingCode) {
         this.mActivity = activity;
         this.mDatabase = AppDatabase.getDatabase(activity);
         this.executor = new MyExecutor();
         this.mSorting = sortingCode;
+        this.firebaseAnalytics = ((BaseActivity) activity).mFirebaseAnalytics;
     }
 
     @Override
@@ -160,6 +167,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             final Movie movie = mList.get(position);
 
             if (isFavorite) {
+                Bundle payload = new Bundle();
+                payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
+                payload.putString(FirebaseAnalytics.Param.ITEM_NAME, movie.originalTitle);
+                payload.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, getSortingName(mActivity, mSorting));
+                firebaseAnalytics.
+                        logEvent("add_to_favorites", payload);
+
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {

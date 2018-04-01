@@ -52,12 +52,16 @@ public class MovieListViewModel extends AndroidViewModel {
     public MutableLiveData<Integer> getStatus() {
         if (status == null) {
             status = new MutableLiveData<>();
-            status.setValue(Codes.SUCCESS);
+            status.setValue(Codes.LOADING);
         }
         return status;
     }
 
     public void loadMovies(int sortingCode, int page) {
+        if (status == null) {
+            status = new MutableLiveData<>();
+        }
+        status.setValue(Codes.LOADING);
         Call<ApiResponse<Movie>> call;
 
         if (sortingCode < 4) {
@@ -105,7 +109,7 @@ public class MovieListViewModel extends AndroidViewModel {
             @Override
             public void onFailure(Call<ApiResponse<Movie>> call, Throwable t) {
                 movieList = null;
-                status.setValue(Codes.NO_INTERNET);
+                status.setValue(Codes.ERROR);
             }
         });
     }

@@ -23,10 +23,12 @@ import com.ahmetroid.popularmovies.utils.Codes;
 import com.ahmetroid.popularmovies.utils.GridItemDecoration;
 import com.ahmetroid.popularmovies.utils.RecyclerViewScrollListener;
 import com.ahmetroid.popularmovies.viewmodel.MovieListViewModel;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
 
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
+import static com.ahmetroid.popularmovies.utils.Codes.getSortingName;
 
 public class MovieListFragment extends Fragment {
 
@@ -43,6 +45,7 @@ public class MovieListFragment extends Fragment {
     private int mSorting;
     private Bundle mSavedInstanceState;
     private MovieListViewModel mViewModel;
+    private FirebaseAnalytics firebaseAnalytics;
 
     public MovieListFragment() {
         // Required empty public constructor
@@ -90,8 +93,21 @@ public class MovieListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        BaseActivity baseActivity = (BaseActivity) getActivity();
+        firebaseAnalytics = baseActivity.mFirebaseAnalytics;
+
+        Bundle payload = new Bundle();
+        payload.putString(FirebaseAnalytics.Param.ITEM_CATEGORY,
+                getSortingName(getContext(), mSorting));
+        firebaseAnalytics.
+                logEvent(FirebaseAnalytics.Event.VIEW_ITEM_LIST, payload);
+
         mViewModel = ViewModelProviders.of(this).get(MovieListViewModel.class);
-        showInternetStatus();
+
+        if (mSorting != Codes.FAVORITES) {
+            showInternetStatus();
+        }
+
         populateUI();
     }
 
@@ -204,18 +220,24 @@ public class MovieListFragment extends Fragment {
         mViewModel.getStatus().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(@Nullable Integer status) {
-                if (mSorting != Codes.FAVORITES) {
-                    mBinding.swipeRefreshLayout.setRefreshing(false);
-                    if (status == Codes.NO_INTERNET) {
+                switch (status) {
+                    case Codes.LOADING:
+                        mBinding.swipeRefreshLayout.setRefreshing(true);
+                        hideStatus();
+                        break;
+                    case Codes.SUCCESS:
+                        mBinding.swipeRefreshLayout.setRefreshing(false);
+                        mBinding.swipeRefreshLayout.setEnabled(false);
+                        hideStatus();
+                        break;
+                    case Codes.ERROR:
+                        mBinding.swipeRefreshLayout.setRefreshing(false);
+                        mBinding.swipeRefreshLayout.setEnabled(true);
                         mBinding.statusImage.setImageResource(R.drawable.ic_signal_wifi_off_white_24px);
                         mBinding.statusImage.setVisibility(View.VISIBLE);
                         mBinding.statusText.setText(R.string.no_internet);
                         mBinding.statusText.setVisibility(View.VISIBLE);
-                        mBinding.swipeRefreshLayout.setEnabled(true);
-                    } else {
-                        mBinding.swipeRefreshLayout.setEnabled(false);
-                        hideStatus();
-                    }
+                        break;
                 }
             }
         });

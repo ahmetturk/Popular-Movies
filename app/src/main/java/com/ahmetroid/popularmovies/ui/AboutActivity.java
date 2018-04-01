@@ -8,14 +8,19 @@ import android.view.View;
 
 import com.ahmetroid.popularmovies.BuildConfig;
 import com.ahmetroid.popularmovies.R;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import mehdi.sakout.aboutpage.AboutPage;
 import mehdi.sakout.aboutpage.Element;
 
 public class AboutActivity extends AppCompatActivity {
+
+    public FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         Element versionElement = new Element();
         versionElement.setTitle("Version " + BuildConfig.VERSION_NAME);

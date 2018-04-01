@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -37,6 +38,7 @@ import com.ahmetroid.popularmovies.utils.Codes;
 import com.ahmetroid.popularmovies.utils.HorizontalItemDecoration;
 import com.ahmetroid.popularmovies.utils.MyExecutor;
 import com.google.android.gms.ads.AdRequest;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -50,9 +52,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.ahmetroid.popularmovies.utils.Codes.getSortingName;
+
 public class DetailActivity extends AppCompatActivity {
     public static final String DETAIL_INTENT_KEY = "com.example.ahmet.popularmovies.ui.detail";
     public static final String MOVIE_NUMBER_KEY = "com.example.ahmet.popularmovies.ui.movie_number";
+    public static final String SORTING_KEY = "com.example.ahmet.popularmovies.ui.sorting";
 
     private static final String BUNDLE_VIDEOS = "videos";
     private static final String BUNDLE_REVIEWS = "reviews";
@@ -66,15 +71,20 @@ public class DetailActivity extends AppCompatActivity {
     private ApiClient mApiClient;
     private Executor executor;
     private int movieNumber;
+    private int mSorting;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
         mBinding.adView.loadAd(adRequest);
+        mBinding.adViewMedium.loadAd(adRequest);
 
         // Making Collapsing Toolbar Width / Height Ratio = 3 / 2
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -92,7 +102,15 @@ public class DetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         movieNumber = intent.getIntExtra(MOVIE_NUMBER_KEY, -1);
+        mSorting = intent.getIntExtra(SORTING_KEY, -1);
         movie = intent.getParcelableExtra(DETAIL_INTENT_KEY);
+
+        Bundle payload = new Bundle();
+        payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
+        payload.putString(FirebaseAnalytics.Param.ITEM_NAME, movie.originalTitle);
+        payload.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, getSortingName(this, mSorting));
+        mFirebaseAnalytics.
+                logEvent(FirebaseAnalytics.Event.VIEW_ITEM, payload);
 
         mBinding.setMovie(movie);
         mBinding.setPresenter(this);
@@ -165,6 +183,9 @@ public class DetailActivity extends AppCompatActivity {
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_VIDEOS)) {
             mVideoAdapter.addVideosList(savedInstanceState.
                     <Video>getParcelableArrayList(BUNDLE_VIDEOS));
+            if (mVideoAdapter.getItemCount() == 0) {
+                mBinding.movieVideos.videosLabel.setVisibility(View.GONE);
+            }
         } else {
             Call<ApiResponse<Video>> call = mApiClient.getVideos(movie.movieId);
 
@@ -205,7 +226,11 @@ public class DetailActivity extends AppCompatActivity {
         mBinding.movieReviews.reviewsList.setAdapter(mReviewAdapter);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_REVIEWS)) {
-            mReviewAdapter.addReviewsList(savedInstanceState.<Review>getParcelableArrayList(BUNDLE_REVIEWS));
+            mReviewAdapter.addReviewsList(savedInstanceState.
+                    <Review>getParcelableArrayList(BUNDLE_REVIEWS));
+            if (mReviewAdapter.getItemCount() == 0) {
+                mBinding.movieReviews.reviewsLabel.setVisibility(View.GONE);
+            }
         } else {
             Call<ApiResponse<Review>> call = mApiClient.getReviews(movie.movieId);
 
@@ -248,6 +273,13 @@ public class DetailActivity extends AppCompatActivity {
             mBinding.favoriteButton.setImageResource(R.drawable.ic_star_border_white_24px);
             snackBarText = getString(R.string.remove_favorite);
         } else {
+            Bundle payload = new Bundle();
+            payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
+            payload.putString(FirebaseAnalytics.Param.ITEM_NAME, movie.originalTitle);
+            payload.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, getSortingName(this, mSorting));
+            mFirebaseAnalytics.
+                    logEvent("add_to_favorites", payload);
+
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -271,10 +303,18 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.share:
-                String shareText = "https://www.themoviedb.org/movie/" + movie.movieId;
+                String shareText = "themoviedb.org/movie/" + movie.movieId + " download Cinemate onelink.to/zxmp8t";
                 ShareCompat.IntentBuilder intentBuilder = ShareCompat.IntentBuilder.from(this)
                         .setText(shareText)
                         .setType("text/plain");
+
+                Bundle payload = new Bundle();
+                payload.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "movie");
+                payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
+                payload.putString(FirebaseAnalytics.Param.METHOD, "movie detail share");
+                mFirebaseAnalytics.
+                        logEvent(FirebaseAnalytics.Event.SHARE, payload);
+
                 try {
                     intentBuilder.startChooser();
                 } catch (ActivityNotFoundException e) {
@@ -334,6 +374,13 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void onClickExpand(View view, Review review) {
+        Bundle payload = new Bundle();
+        payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
+        payload.putString(FirebaseAnalytics.Param.ITEM_NAME, movie.originalTitle);
+        payload.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, getSortingName(this, mSorting));
+        mFirebaseAnalytics.
+                logEvent("review_expand", payload);
+
         Intent intent = new Intent(this, ReviewActivity.class);
         ActivityOptionsCompat options = ActivityOptionsCompat.
                 makeSceneTransitionAnimation(this,
@@ -342,5 +389,25 @@ public class DetailActivity extends AppCompatActivity {
         intent.putExtra(ReviewActivity.REVIEW_INTENT_KEY, review);
         intent.putExtra(ReviewActivity.MOVIE_TITLE_KEY, movie.originalTitle);
         startActivity(intent, options.toBundle());
+    }
+
+    public void onClickVideo(String videoUrl) {
+        Bundle payload = new Bundle();
+        payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
+        payload.putString(FirebaseAnalytics.Param.ITEM_NAME, movie.originalTitle);
+        payload.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, getSortingName(this, mSorting));
+        mFirebaseAnalytics.
+                logEvent("video_click", payload);
+
+        Intent appIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("vnd.youtube:" + videoUrl));
+
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://www.youtube.com/watch?v=" + videoUrl));
+        try {
+            startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            startActivity(webIntent);
+        }
     }
 }
