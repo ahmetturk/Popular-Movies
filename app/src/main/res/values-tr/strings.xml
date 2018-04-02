@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Cinemate</string>
+    <string name="app_name">Sinemate</string>
     <string name="action_share">Paylaş</string>
     <string name="add_favorite">Favorilere eklendi</string>
     <string name="cd_favorite">Favori</string>
@@ -52,5 +52,5 @@
     <string name="dialog_title">Yapım Aşamasında</string>
     <string name="dialog_message">Bu özellik gelecek güncellemede gelecektir</string>
     <string name="press_again">Çıkmak için tekrar bas</string>
-    <string name="share_text">%1$s \nthemoviedb.org/movie/%2$s \n\nCinemate İndir: onelink.to/zxmp8t"</string>
+    <string name="share_text">%1$s \nthemoviedb.org/movie/%2$s \n\nSinemate İndir: onelink.to/zxmp8t"</string>
 </resources>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Cinemate</string>
+    <string name="app_name">Sinemate</string>
 
     <!--Shared Preferences key-->
     <string name="pref_changed_movie" translatable="false">changed_movie</string>
@@ -73,5 +73,5 @@
     <string name="dialog_message">This feature will be added in next update</string>
     <string name="press_again">Press again to exit</string>
 
-    <string name="share_text">%1$s \nthemoviedb.org/movie/%2$s \n\nDownload Cinemate: onelink.to/zxmp8t"</string>
+    <string name="share_text">%1$s \nthemoviedb.org/movie/%2$s \n\nDownload Sinemate: onelink.to/zxmp8t"</string>
 </resources>
