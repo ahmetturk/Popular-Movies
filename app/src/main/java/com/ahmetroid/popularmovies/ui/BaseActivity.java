@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.adapter.MovieFragmentPager;
@@ -171,6 +172,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (exitCount > 0) {
             mDrawerLayout.openDrawer(Gravity.START);
             exitCount--;
+            Toast.makeText(this, getString(R.string.press_again), Toast.LENGTH_SHORT).show();
             return;
         }
         super.onBackPressed();

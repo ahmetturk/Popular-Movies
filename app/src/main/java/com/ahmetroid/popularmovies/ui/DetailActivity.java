@@ -303,7 +303,7 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.share:
-                String shareText = "themoviedb.org/movie/" + movie.movieId + " download Cinemate onelink.to/zxmp8t";
+                String shareText = getString(R.string.share_text, movie.movieTitle, movie.movieId);
                 ShareCompat.IntentBuilder intentBuilder = ShareCompat.IntentBuilder.from(this)
                         .setText(shareText)
                         .setType("text/plain");
@@ -332,6 +332,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         mBinding.favoriteButton.setVisibility(View.INVISIBLE);
+        mBinding.adViewMedium.setVisibility(View.INVISIBLE);
         super.onBackPressed();
     }
 
