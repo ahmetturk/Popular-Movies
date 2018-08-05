@@ -22,14 +22,13 @@
         </activity>
         <activity
             android:name=".ui.MovieGenreActivity"
-            android:theme="@style/AppThemeNoActionBar">
-        </activity>
+            android:theme="@style/AppThemeNoActionBar" />
         <activity
             android:name=".ui.DetailActivity"
-            android:theme="@style/AppThemeTranslucent">
-        </activity>
+            android:theme="@style/AppThemeTranslucent" />
         <activity android:name=".ui.AboutActivity" />
         <activity android:name=".ui.ReviewActivity" />
+        <activity android:name=".ui.SearchActivity" />
     </application>
 
 </manifest>

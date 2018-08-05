@@ -39,15 +39,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private AppDatabase mDatabase;
     private List<Movie> mList;
     private Executor executor;
-    private int mSorting;
-    private FirebaseAnalytics firebaseAnalytics;
 
-    public MovieAdapter(Activity activity, int sortingCode) {
+    public MovieAdapter(Activity activity) {
         this.mActivity = activity;
         this.mDatabase = AppDatabase.getDatabase(activity);
         this.executor = new MyExecutor();
-        this.mSorting = sortingCode;
-        this.firebaseAnalytics = ((BaseActivity) activity).mFirebaseAnalytics;
     }
 
     @Override
@@ -88,15 +84,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         mList.addAll(moviesList);
         notifyItemRangeInserted(positionStart, moviesList.size() - positionStart);
-    }
-
-    // using for refreshing favorite star when back from detail ui
-    public void refreshFavorite() {
-        int movieNumber = AppPreferences.getChangedMovie(mActivity);
-        if (movieNumber != -1) {
-            notifyItemChanged(movieNumber);
-            AppPreferences.setChangedMovie(mActivity, -1);
-        }
     }
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
@@ -154,6 +141,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                             ViewCompat.getTransitionName(binding.movieItemIv));
             intent.putExtra(DetailActivity.DETAIL_INTENT_KEY, movie);
             intent.putExtra(DetailActivity.MOVIE_NUMBER_KEY, movieNumber);
+            intent.putExtra(DetailActivity.SORTING_KEY, Codes.ACTION);
             mActivity.startActivity(intent, options.toBundle());
         }
 
@@ -167,13 +155,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             final Movie movie = mList.get(position);
 
             if (isFavorite) {
-                Bundle payload = new Bundle();
-                payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
-                payload.putString(FirebaseAnalytics.Param.ITEM_NAME, movie.originalTitle);
-                payload.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, getSortingName(mActivity, mSorting));
-                firebaseAnalytics.
-                        logEvent("add_to_favorites", payload);
-
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -183,11 +164,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 isFavorite = false;
                 binding.favoriteIv.setImageResource(R.drawable.ic_star_border_white_24px);
                 snackBarText = mActivity.getString(R.string.remove_favorite);
-
-                if (mSorting == Codes.FAVORITES) {
-                    mList.remove(position);
-                    notifyItemRemoved(position);
-                }
 
             } else {
                 executor.execute(new Runnable() {

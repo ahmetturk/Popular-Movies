@@ -15,7 +15,6 @@ public class MovieListActivity extends BaseActivity {
         list.add(new PagerItem(getString(R.string.top_rated), Codes.TOP_RATED));
         list.add(new PagerItem(getString(R.string.now_playing), Codes.NOW_PLAYING));
         list.add(new PagerItem(getString(R.string.upcoming), Codes.UPCOMING));
-        list.add(new PagerItem(getString(R.string.favorites), Codes.FAVORITES));
         return list;
     }
 

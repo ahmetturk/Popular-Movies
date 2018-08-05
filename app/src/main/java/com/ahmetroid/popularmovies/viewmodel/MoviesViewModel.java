@@ -1,13 +1,10 @@
 package com.ahmetroid.popularmovies.viewmodel;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import com.ahmetroid.popularmovies.R;
-import com.ahmetroid.popularmovies.data.AppDatabase;
 import com.ahmetroid.popularmovies.model.ApiResponse;
 import com.ahmetroid.popularmovies.model.Movie;
 import com.ahmetroid.popularmovies.rest.ApiClient;
@@ -20,44 +17,21 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MovieListViewModel extends AndroidViewModel {
-    private MutableLiveData<List<Movie>> movieList;
-    private MutableLiveData<Integer> status;
-    private AppDatabase database;
-    private ApiClient apiClient;
-    private LiveData<List<Movie>> favoriteList;
+public class MoviesViewModel extends BaseMoviesViewModel {
 
-    public MovieListViewModel(@NonNull Application application) {
+    private ApiClient apiClient;
+    private int sortingCode;
+
+    public MoviesViewModel(@NonNull Application application) {
         super(application);
-        database = AppDatabase.getDatabase(getApplication());
         apiClient = ServiceGenerator.createService(ApiClient.class);
     }
 
-    public LiveData<List<Movie>> getMovieList(int sortingCode) {
-        if (movieList == null) {
-            movieList = new MutableLiveData<>();
-            loadMovies(sortingCode, 1);
-        }
-        return movieList;
+    public void setSortingCode(int sortingCode) {
+        this.sortingCode = sortingCode;
     }
 
-    public LiveData<List<Movie>> getFavoriteList() {
-        if (favoriteList == null) {
-            favoriteList = new MutableLiveData<>();
-            favoriteList = database.movieDao().getAll();
-        }
-        return favoriteList;
-    }
-
-    public MutableLiveData<Integer> getStatus() {
-        if (status == null) {
-            status = new MutableLiveData<>();
-            status.setValue(Codes.LOADING);
-        }
-        return status;
-    }
-
-    public void loadMovies(int sortingCode, int page) {
+    public void loadMovies(int page) {
         if (status == null) {
             status = new MutableLiveData<>();
         }
@@ -95,12 +69,12 @@ public class MovieListViewModel extends AndroidViewModel {
                                    Response<ApiResponse<Movie>> response) {
                 if (response.isSuccessful()) {
                     List<Movie> result = response.body().results;
-                    List<Movie> value = movieList.getValue();
+                    List<Movie> value = movies.getValue();
                     if (value == null || value.isEmpty()) {
-                        movieList.setValue(result);
+                        ((MutableLiveData) movies).setValue(result);
                     } else {
                         value.addAll(result);
-                        movieList.setValue(value);
+                        ((MutableLiveData) movies).setValue(value);
                     }
                     status.setValue(Codes.SUCCESS);
                 }
@@ -108,7 +82,7 @@ public class MovieListViewModel extends AndroidViewModel {
 
             @Override
             public void onFailure(Call<ApiResponse<Movie>> call, Throwable t) {
-                movieList = null;
+                movies = null;
                 status.setValue(Codes.ERROR);
             }
         });

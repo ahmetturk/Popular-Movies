@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bind="http://schemas.android.com/tools">
 
     <data>
@@ -82,15 +82,6 @@
                     layout="@layout/detail_movie"
                     bind:movie="@{movie}"
                     bind:presenter="@{presenter}" />
-
-                <com.google.android.gms.ads.AdView
-                    android:id="@+id/adViewMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="@dimen/margin_medium"
-                    ads:adSize="MEDIUM_RECTANGLE"
-                    ads:adUnitId="ca-app-pub-3758024742170084/4066250367" />
 
                 <include
                     android:id="@+id/movie_videos"

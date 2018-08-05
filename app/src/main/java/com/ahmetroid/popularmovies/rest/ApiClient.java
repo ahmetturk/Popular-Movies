@@ -33,6 +33,10 @@ public interface ApiClient {
                                             @Query("page") String page,
                                             @Query("with_genres") String with_genres);
 
+    @GET("search/movie")
+    Call<ApiResponse<Movie>> getSearchMovies(@Query("language") String language,
+                                            @Query("page") String page,
+                                            @Query("query") String query);
 
     @GET("movie/{id}/reviews")
     Call<ApiResponse<Review>> getReviews(@Path("id") String id);

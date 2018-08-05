@@ -1,11 +1,10 @@
 package com.ahmetroid.popularmovies.adapter;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.ahmetroid.popularmovies.ui.MovieListFragment;
+import com.ahmetroid.popularmovies.ui.MoviesFragment;
 
 import java.util.ArrayList;
 
@@ -20,15 +19,7 @@ public class MovieFragmentPager extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Fragment fragment = new MovieListFragment();
-
-        Bundle bundle = new Bundle();
-        bundle.putInt(MovieListFragment.SORTING_CODE,
-                mPagerItems.get(position).getSortingCode());
-
-        fragment.setArguments(bundle);
-
-        return fragment;
+        return MoviesFragment.newInstance(mPagerItems.get(position).getSortingCode());
     }
 
     @Override

@@ -52,5 +52,6 @@
     <string name="dialog_title">Yapım Aşamasında</string>
     <string name="dialog_message">Bu özellik gelecek güncellemede gelecektir</string>
     <string name="press_again">Çıkmak için tekrar bas</string>
-    <string name="share_text">%1$s \nthemoviedb.org/movie/%2$s \n\nSinemate İndir: onelink.to/zxmp8t"</string>
+    <string name="share_text">%1$s \nthemoviedb.org/movie/%2$s \n\nSinemate İndir: onelink.to/zxmp8t</string>
+    <string name="search_title">"%1$s" Sonuçları</string>
 </resources>

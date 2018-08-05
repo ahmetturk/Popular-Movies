@@ -81,11 +81,6 @@ public class DetailActivity extends AppCompatActivity {
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
-        AdRequest adRequest = new AdRequest.Builder()
-                .build();
-        mBinding.adView.loadAd(adRequest);
-        mBinding.adViewMedium.loadAd(adRequest);
-
         // Making Collapsing Toolbar Width / Height Ratio = 3 / 2
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -332,7 +327,6 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         mBinding.favoriteButton.setVisibility(View.INVISIBLE);
-        mBinding.adViewMedium.setVisibility(View.INVISIBLE);
         super.onBackPressed();
     }
 

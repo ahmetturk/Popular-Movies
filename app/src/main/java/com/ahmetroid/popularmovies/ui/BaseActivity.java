@@ -6,11 +6,13 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
@@ -50,6 +52,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         AdView adView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("521D6B4183AE010C9D5AB685FF5F0B25")
                 .build();
         adView.loadAd(adRequest);
 
@@ -134,19 +137,22 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        /*SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        final MenuItem menuItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) menuItem.getActionView();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                menuItem.collapseActionView();
+                startActivity(SearchActivity.newIntent(BaseActivity.this, query));
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
             }
-        });*/
+        });
         return true;
     }
 
@@ -156,13 +162,13 @@ public abstract class BaseActivity extends AppCompatActivity {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
-            case R.id.action_search:
+            /*case R.id.action_search:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage(R.string.dialog_message)
                         .setTitle(R.string.dialog_title);
                 AlertDialog dialog = builder.create();
                 dialog.show();
-                return true;
+                return true;*/
         }
         return super.onOptionsItemSelected(item);
     }
