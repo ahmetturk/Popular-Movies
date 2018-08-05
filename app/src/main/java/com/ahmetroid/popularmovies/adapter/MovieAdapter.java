@@ -2,9 +2,6 @@ package com.ahmetroid.popularmovies.adapter;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -16,34 +13,32 @@ import android.view.ViewGroup;
 
 import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.data.AppDatabase;
-import com.ahmetroid.popularmovies.data.AppPreferences;
 import com.ahmetroid.popularmovies.databinding.ItemMovieBinding;
 import com.ahmetroid.popularmovies.model.MiniMovie;
 import com.ahmetroid.popularmovies.model.Movie;
-import com.ahmetroid.popularmovies.ui.BaseActivity;
 import com.ahmetroid.popularmovies.ui.DetailActivity;
 import com.ahmetroid.popularmovies.utils.Codes;
-import com.ahmetroid.popularmovies.utils.MyExecutor;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.ahmetroid.popularmovies.utils.MainThreadExecutor;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
-
-import static com.ahmetroid.popularmovies.utils.Codes.getSortingName;
+import java.util.concurrent.Executors;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private Activity mActivity;
-    private AppDatabase mDatabase;
+    private final Activity mActivity;
+    private final AppDatabase mDatabase;
     private List<Movie> mList;
-    private Executor executor;
+    private final Executor diskIO;
+    private final Executor mainThread;
 
     public MovieAdapter(Activity activity) {
         this.mActivity = activity;
         this.mDatabase = AppDatabase.getDatabase(activity);
-        this.executor = new MyExecutor();
+        this.diskIO = Executors.newSingleThreadExecutor();
+        this.mainThread = new MainThreadExecutor();
     }
 
     @Override
@@ -79,15 +74,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     }
 
     public void addList(List<Movie> moviesList) {
-        int positionStart = mList.size();
-        mList.clear();
-
-        mList.addAll(moviesList);
-        notifyItemRangeInserted(positionStart, moviesList.size() - positionStart);
+        mList = moviesList;
+        notifyDataSetChanged();
     }
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
-        ItemMovieBinding binding;
+        final ItemMovieBinding binding;
         boolean isFavorite;
 
         MovieAdapterViewHolder(ItemMovieBinding binding) {
@@ -104,13 +96,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                     .error(R.drawable.error)
                     .into(binding.movieItemIv);
 
-            executor.execute(new Runnable() {
+            diskIO.execute(new Runnable() {
                 @Override
                 public void run() {
                     final MiniMovie miniMovie = mDatabase.movieDao().getMovieById(movie.movieId);
 
-                    Handler handler = new Handler(Looper.getMainLooper());
-                    handler.post(new Runnable() {
+                    mainThread.execute(new Runnable() {
                         @Override
                         public void run() {
                             if (miniMovie != null) {
@@ -132,16 +123,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
          * when returning back to main ui
          */
         public void openMovieDetail(Movie movie) {
-            int movieNumber = getAdapterPosition();
-
             Intent intent = new Intent(mActivity, DetailActivity.class);
             ActivityOptionsCompat options = ActivityOptionsCompat.
                     makeSceneTransitionAnimation(mActivity,
                             binding.movieItemIv,
                             ViewCompat.getTransitionName(binding.movieItemIv));
             intent.putExtra(DetailActivity.DETAIL_INTENT_KEY, movie);
-            intent.putExtra(DetailActivity.MOVIE_NUMBER_KEY, movieNumber);
-            intent.putExtra(DetailActivity.SORTING_KEY, Codes.ACTION);
             mActivity.startActivity(intent, options.toBundle());
         }
 
@@ -155,7 +142,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             final Movie movie = mList.get(position);
 
             if (isFavorite) {
-                executor.execute(new Runnable() {
+                diskIO.execute(new Runnable() {
                     @Override
                     public void run() {
                         mDatabase.movieDao().delete(movie);
@@ -166,7 +153,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 snackBarText = mActivity.getString(R.string.remove_favorite);
 
             } else {
-                executor.execute(new Runnable() {
+                diskIO.execute(new Runnable() {
                     @Override
                     public void run() {
                         mDatabase.movieDao().insert(movie);

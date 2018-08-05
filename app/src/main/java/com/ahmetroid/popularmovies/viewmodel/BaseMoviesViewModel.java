@@ -7,16 +7,16 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 
 import com.ahmetroid.popularmovies.model.Movie;
-import com.ahmetroid.popularmovies.utils.Codes;
+import com.ahmetroid.popularmovies.utils.Status;
 
 import java.util.List;
 
 public abstract class BaseMoviesViewModel extends AndroidViewModel {
 
-    protected LiveData<List<Movie>> movies;
-    protected MutableLiveData<Integer> status;
+    LiveData<List<Movie>> movies;
+    MutableLiveData<Integer> status;
 
-    public BaseMoviesViewModel(@NonNull Application application) {
+    BaseMoviesViewModel(@NonNull Application application) {
         super(application);
     }
 
@@ -31,7 +31,7 @@ public abstract class BaseMoviesViewModel extends AndroidViewModel {
     public LiveData<Integer> getStatus() {
         if (status == null) {
             status = new MutableLiveData<>();
-            status.setValue(Codes.LOADING);
+            status.setValue(Status.LOADING);
         }
         return status;
     }

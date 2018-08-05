@@ -1,19 +1,11 @@
 package com.ahmetroid.popularmovies.utils;
 
-import android.content.Context;
-
 public class Codes {
 
     public static final String ADMOB_APP_ID = "ca-app-pub-3758024742170084~8867125254";
 
     public static final String POSTER_URL = "http://image.tmdb.org/t/p/w342";
     public static final String BACKDROP_URL = "http://image.tmdb.org/t/p/w780";
-
-    // internet status codes
-    public static final int LOADING = 0;
-    public static final int SUCCESS = 1;
-    public static final int ERROR = 2;
-
 
     // Movie List Activity Codes
     public static final int POPULAR = 0;
@@ -80,56 +72,6 @@ public class Codes {
             case Codes.WESTERN:
             default:
                 return "37";
-        }
-    }
-
-    public static String getSortingName(Context context, int sortingCode) {
-        switch (sortingCode) {
-            case Codes.POPULAR:
-                return "Popular";
-            case Codes.TOP_RATED:
-                return "Top Rated";
-            case Codes.NOW_PLAYING:
-                return "Now Playing";
-            case Codes.UPCOMING:
-                return "Upcoming";
-            case Codes.FAVORITES:
-                return "Favorites";
-            case Codes.ACTION:
-                return "Action";
-            case Codes.ADVENTURE:
-                return "Adventure";
-            case Codes.ANIMATION:
-                return "Animation";
-            case Codes.COMEDY:
-                return "Comedy";
-            case Codes.CRIME:
-                return "Crime";
-            case Codes.DRAMA:
-                return "Drama";
-            case Codes.FAMILY:
-                return "Family";
-            case Codes.FANTASY:
-                return "Fantasy";
-            case Codes.HISTORY:
-                return "History";
-            case Codes.HORROR:
-                return "Horror";
-            case Codes.MUSIC:
-                return "Music";
-            case Codes.MYSTERY:
-                return "Mystery";
-            case Codes.ROMANCE:
-                return "Romance";
-            case Codes.SCIENCE_FICTION:
-                return "Science Fiction";
-            case Codes.THRILLER:
-                return "Thriller";
-            case Codes.WAR:
-                return "War";
-            case Codes.WESTERN:
-            default:
-                return "Western";
         }
     }
 }

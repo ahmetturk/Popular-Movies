@@ -2,15 +2,14 @@ package com.ahmetroid.popularmovies.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -25,7 +24,6 @@ import com.ahmetroid.popularmovies.adapter.PagerItem;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 
@@ -33,11 +31,7 @@ import static com.ahmetroid.popularmovies.utils.Codes.ADMOB_APP_ID;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private static final String BUNDLE_SELECTED = "selected";
-
     private DrawerLayout mDrawerLayout;
-    private int mSelected;
-    public FirebaseAnalytics mFirebaseAnalytics;
     private int exitCount;
 
     @Override
@@ -47,7 +41,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         exitCount = 1;
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         MobileAds.initialize(this, ADMOB_APP_ID);
 
         AdView adView = findViewById(R.id.adView);
@@ -59,12 +52,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        MovieFragmentPager pagerAdapter = new MovieFragmentPager(getSupportFragmentManager(), getPagerItems());
+        MovieFragmentPager pagerAdapter = getPager();
 
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(pagerAdapter);
 
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        final TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
         ActionBar actionbar = getSupportActionBar();
@@ -77,35 +70,24 @@ public abstract class BaseActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                         Intent intent;
-                        Bundle payload = new Bundle();
 
                         switch (menuItem.getItemId()) {
                             case R.id.nav_movie_list:
-                                intent = new Intent(BaseActivity.this, MovieListActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                mSelected = 0;
-                                payload.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Movies");
-                                payload.putString(FirebaseAnalytics.Param.ITEM_NAME, "Movies Lists");
+                                intent = MovieListActivity.newIntent(BaseActivity.this);
                                 break;
                             case R.id.nav_movie_genre:
-                                intent = new Intent(BaseActivity.this, MovieGenreActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                mSelected = 1;
-                                payload.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Movies");
-                                payload.putString(FirebaseAnalytics.Param.ITEM_NAME, "Movies Genres");
+                                intent = MovieGenreActivity.newIntent(BaseActivity.this);
+                                break;
+                            case R.id.nav_favorites:
+                                intent = FavoritesActivity.newIntent(BaseActivity.this);
                                 break;
                             case R.id.nav_about:
                             default:
-                                payload.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Others");
-                                payload.putString(FirebaseAnalytics.Param.ITEM_NAME, "About");
-                                intent = new Intent(BaseActivity.this, AboutActivity.class);
+                                intent = AboutActivity.newIntent(BaseActivity.this);
                                 break;
                         }
-
-                        mFirebaseAnalytics.
-                                logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, payload);
 
                         mDrawerLayout.closeDrawers();
 
@@ -116,23 +98,16 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }
                 });
 
-        if (savedInstanceState == null) {
-            navigationView.setCheckedItem(getCheckedItem());
-        } else {
-            mSelected = savedInstanceState.getInt(BUNDLE_SELECTED);
-            navigationView.setCheckedItem(mSelected);
-        }
+        navigationView.setCheckedItem(getCheckedItem());
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(BUNDLE_SELECTED, mSelected);
-        super.onSaveInstanceState(outState);
+    abstract ArrayList<PagerItem> getPagerItems();
+
+    abstract int getCheckedItem();
+
+    MovieFragmentPager getPager() {
+        return new MovieFragmentPager(getSupportFragmentManager(), getPagerItems());
     }
-
-    protected abstract ArrayList<PagerItem> getPagerItems();
-
-    protected abstract int getCheckedItem();
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -162,13 +137,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
-            /*case R.id.action_search:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage(R.string.dialog_message)
-                        .setTitle(R.string.dialog_title);
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                return true;*/
         }
         return super.onOptionsItemSelected(item);
     }

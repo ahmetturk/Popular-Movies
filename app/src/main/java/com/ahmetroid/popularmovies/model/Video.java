@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("WeakerAccess")
 public class Video implements Parcelable {
     public static final Parcelable.Creator<Video> CREATOR
             = new Parcelable.Creator<Video>() {
@@ -18,9 +19,9 @@ public class Video implements Parcelable {
     };
 
     @SerializedName("key")
-    public String videoUrl;
+    public final String videoUrl;
     @SerializedName("name")
-    public String videoName;
+    public final String videoName;
 
     private Video(Parcel in) {
         videoUrl = in.readString();

@@ -24,7 +24,6 @@ import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.adapter.ReviewAdapter;
 import com.ahmetroid.popularmovies.adapter.VideoAdapter;
 import com.ahmetroid.popularmovies.data.AppDatabase;
-import com.ahmetroid.popularmovies.data.AppPreferences;
 import com.ahmetroid.popularmovies.databinding.ActivityDetailBinding;
 import com.ahmetroid.popularmovies.model.ApiResponse;
 import com.ahmetroid.popularmovies.model.MiniMovie;
@@ -36,9 +35,7 @@ import com.ahmetroid.popularmovies.rest.ApiClient;
 import com.ahmetroid.popularmovies.rest.ServiceGenerator;
 import com.ahmetroid.popularmovies.utils.Codes;
 import com.ahmetroid.popularmovies.utils.HorizontalItemDecoration;
-import com.ahmetroid.popularmovies.utils.MyExecutor;
-import com.google.android.gms.ads.AdRequest;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.ahmetroid.popularmovies.utils.MainThreadExecutor;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -52,12 +49,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.ahmetroid.popularmovies.utils.Codes.getSortingName;
-
 public class DetailActivity extends AppCompatActivity {
     public static final String DETAIL_INTENT_KEY = "com.example.ahmet.popularmovies.ui.detail";
-    public static final String MOVIE_NUMBER_KEY = "com.example.ahmet.popularmovies.ui.movie_number";
-    public static final String SORTING_KEY = "com.example.ahmet.popularmovies.ui.sorting";
 
     private static final String BUNDLE_VIDEOS = "videos";
     private static final String BUNDLE_REVIEWS = "reviews";
@@ -69,15 +62,11 @@ public class DetailActivity extends AppCompatActivity {
     private ReviewAdapter mReviewAdapter;
     private Movie movie;
     private ApiClient mApiClient;
-    private Executor executor;
-    private int movieNumber;
-    private int mSorting;
-    private FirebaseAnalytics mFirebaseAnalytics;
+    private Executor diskIO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
@@ -93,19 +82,10 @@ public class DetailActivity extends AppCompatActivity {
         mDatabase = AppDatabase.getDatabase(this);
 
         mApiClient = ServiceGenerator.createService(ApiClient.class);
-        executor = new MyExecutor();
+        diskIO = new MainThreadExecutor();
 
         Intent intent = getIntent();
-        movieNumber = intent.getIntExtra(MOVIE_NUMBER_KEY, -1);
-        mSorting = intent.getIntExtra(SORTING_KEY, -1);
         movie = intent.getParcelableExtra(DETAIL_INTENT_KEY);
-
-        Bundle payload = new Bundle();
-        payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
-        payload.putString(FirebaseAnalytics.Param.ITEM_NAME, movie.originalTitle);
-        payload.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, getSortingName(this, mSorting));
-        mFirebaseAnalytics.
-                logEvent(FirebaseAnalytics.Event.VIEW_ITEM, payload);
 
         mBinding.setMovie(movie);
         mBinding.setPresenter(this);
@@ -143,7 +123,7 @@ public class DetailActivity extends AppCompatActivity {
                 .error(R.drawable.error)
                 .into(mBinding.movieDetails.poster);
 
-        executor.execute(new Runnable() {
+        diskIO.execute(new Runnable() {
             @Override
             public void run() {
                 MiniMovie miniMovie = mDatabase.movieDao().getMovieById(movie.movieId);
@@ -254,11 +234,9 @@ public class DetailActivity extends AppCompatActivity {
      * adding favorite means adds it to sql database
      */
     public void onClickFavoriteButton() {
-        AppPreferences.setChangedMovie(this, movieNumber);
-
         String snackBarText;
         if (isFavorite) {
-            executor.execute(new Runnable() {
+            diskIO.execute(new Runnable() {
                 @Override
                 public void run() {
                     mDatabase.movieDao().delete(movie);
@@ -268,14 +246,7 @@ public class DetailActivity extends AppCompatActivity {
             mBinding.favoriteButton.setImageResource(R.drawable.ic_star_border_white_24px);
             snackBarText = getString(R.string.remove_favorite);
         } else {
-            Bundle payload = new Bundle();
-            payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
-            payload.putString(FirebaseAnalytics.Param.ITEM_NAME, movie.originalTitle);
-            payload.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, getSortingName(this, mSorting));
-            mFirebaseAnalytics.
-                    logEvent("add_to_favorites", payload);
-
-            executor.execute(new Runnable() {
+            diskIO.execute(new Runnable() {
                 @Override
                 public void run() {
                     mDatabase.movieDao().insert(movie);
@@ -302,13 +273,6 @@ public class DetailActivity extends AppCompatActivity {
                 ShareCompat.IntentBuilder intentBuilder = ShareCompat.IntentBuilder.from(this)
                         .setText(shareText)
                         .setType("text/plain");
-
-                Bundle payload = new Bundle();
-                payload.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "movie");
-                payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
-                payload.putString(FirebaseAnalytics.Param.METHOD, "movie detail share");
-                mFirebaseAnalytics.
-                        logEvent(FirebaseAnalytics.Event.SHARE, payload);
 
                 try {
                     intentBuilder.startChooser();
@@ -343,6 +307,7 @@ public class DetailActivity extends AppCompatActivity {
         return DateFormat.getDateInstance(DateFormat.LONG).format(date);
     }
 
+    @SuppressWarnings("SameReturnValue")
     public String getEnglishPlotSynopsis(String id) {
         Call<MovieDetail> call = mApiClient.getMovieById(id);
 
@@ -369,13 +334,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void onClickExpand(View view, Review review) {
-        Bundle payload = new Bundle();
-        payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
-        payload.putString(FirebaseAnalytics.Param.ITEM_NAME, movie.originalTitle);
-        payload.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, getSortingName(this, mSorting));
-        mFirebaseAnalytics.
-                logEvent("review_expand", payload);
-
         Intent intent = new Intent(this, ReviewActivity.class);
         ActivityOptionsCompat options = ActivityOptionsCompat.
                 makeSceneTransitionAnimation(this,
@@ -387,13 +345,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void onClickVideo(String videoUrl) {
-        Bundle payload = new Bundle();
-        payload.putString(FirebaseAnalytics.Param.ITEM_ID, movie.movieId);
-        payload.putString(FirebaseAnalytics.Param.ITEM_NAME, movie.originalTitle);
-        payload.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, getSortingName(this, mSorting));
-        mFirebaseAnalytics.
-                logEvent("video_click", payload);
-
         Intent appIntent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse("vnd.youtube:" + videoUrl));
 

@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("WeakerAccess")
 @Entity
 public class Movie implements Parcelable {
     public static final Parcelable.Creator<Movie> CREATOR

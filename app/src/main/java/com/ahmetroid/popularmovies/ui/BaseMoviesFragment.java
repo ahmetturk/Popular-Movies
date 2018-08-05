@@ -17,9 +17,9 @@ import com.ahmetroid.popularmovies.R;
 import com.ahmetroid.popularmovies.adapter.MovieAdapter;
 import com.ahmetroid.popularmovies.databinding.FragmentMovieListBinding;
 import com.ahmetroid.popularmovies.model.Movie;
-import com.ahmetroid.popularmovies.utils.Codes;
 import com.ahmetroid.popularmovies.utils.GridItemDecoration;
 import com.ahmetroid.popularmovies.utils.RecyclerViewScrollListener;
+import com.ahmetroid.popularmovies.utils.Status;
 import com.ahmetroid.popularmovies.viewmodel.BaseMoviesViewModel;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public abstract class BaseMoviesFragment extends Fragment {
     private static final String BUNDLE_COUNT = "count";
     private static final String BUNDLE_RECYCLER = "recycler";
 
-    private FragmentMovieListBinding mBinding;
+    FragmentMovieListBinding mBinding;
     private BaseMoviesViewModel mViewModel;
     private MovieAdapter mMoviesAdapter;
     private RecyclerViewScrollListener mScrollListener;
@@ -40,7 +40,7 @@ public abstract class BaseMoviesFragment extends Fragment {
     private Bundle mSavedInstanceState;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mSavedInstanceState = savedInstanceState;
 
@@ -107,6 +107,7 @@ public abstract class BaseMoviesFragment extends Fragment {
             public void onChanged(@Nullable List<Movie> movies) {
                 if (movies != null) {
                     mMoviesAdapter.addList(movies);
+                    onMovieChanged(movies);
                 }
             }
         });
@@ -158,16 +159,16 @@ public abstract class BaseMoviesFragment extends Fragment {
             @Override
             public void onChanged(@Nullable Integer status) {
                 switch (status) {
-                    case Codes.LOADING:
+                    case Status.LOADING:
                         mBinding.swipeRefreshLayout.setRefreshing(true);
                         hideStatus();
                         break;
-                    case Codes.SUCCESS:
+                    case Status.SUCCESS:
                         mBinding.swipeRefreshLayout.setRefreshing(false);
                         mBinding.swipeRefreshLayout.setEnabled(false);
                         hideStatus();
                         break;
-                    case Codes.ERROR:
+                    case Status.ERROR:
                         mBinding.swipeRefreshLayout.setRefreshing(false);
                         mBinding.swipeRefreshLayout.setEnabled(true);
                         mBinding.statusImage.setImageResource(R.drawable.ic_signal_wifi_off_white_24px);
@@ -183,10 +184,14 @@ public abstract class BaseMoviesFragment extends Fragment {
     /**
      * hides status text view
      */
-    private void hideStatus() {
+    void hideStatus() {
         mBinding.statusImage.setVisibility(View.INVISIBLE);
         mBinding.statusText.setVisibility(View.INVISIBLE);
     }
 
+    void onMovieChanged(List<Movie> movies) {
+    }
+
     abstract BaseMoviesViewModel getViewModel();
+
 }

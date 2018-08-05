@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("WeakerAccess")
 public class Review implements Parcelable {
 
     public static final Parcelable.Creator<Review> CREATOR

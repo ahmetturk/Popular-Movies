@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class MovieFragmentPager extends FragmentStatePagerAdapter {
 
-    private ArrayList<PagerItem> mPagerItems;
+    private final ArrayList<PagerItem> mPagerItems;
 
     public MovieFragmentPager(FragmentManager fragmentManager, ArrayList<PagerItem> pagerItems) {
         super(fragmentManager);

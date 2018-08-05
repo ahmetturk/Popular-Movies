@@ -10,6 +10,7 @@ import com.ahmetroid.popularmovies.model.Movie;
 import com.ahmetroid.popularmovies.rest.ApiClient;
 import com.ahmetroid.popularmovies.rest.ServiceGenerator;
 import com.ahmetroid.popularmovies.utils.Codes;
+import com.ahmetroid.popularmovies.utils.Status;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ import retrofit2.Response;
 
 public class MoviesViewModel extends BaseMoviesViewModel {
 
-    private ApiClient apiClient;
+    private final ApiClient apiClient;
     private int sortingCode;
 
     public MoviesViewModel(@NonNull Application application) {
@@ -35,7 +36,7 @@ public class MoviesViewModel extends BaseMoviesViewModel {
         if (status == null) {
             status = new MutableLiveData<>();
         }
-        status.setValue(Codes.LOADING);
+        status.setValue(Status.LOADING);
         Call<ApiResponse<Movie>> call;
 
         if (sortingCode < 4) {
@@ -68,22 +69,23 @@ public class MoviesViewModel extends BaseMoviesViewModel {
             public void onResponse(Call<ApiResponse<Movie>> call,
                                    Response<ApiResponse<Movie>> response) {
                 if (response.isSuccessful()) {
+                    assert response.body() != null;
                     List<Movie> result = response.body().results;
                     List<Movie> value = movies.getValue();
                     if (value == null || value.isEmpty()) {
-                        ((MutableLiveData) movies).setValue(result);
+                        ((MutableLiveData<List<Movie>>) movies).setValue(result);
                     } else {
                         value.addAll(result);
-                        ((MutableLiveData) movies).setValue(value);
+                        ((MutableLiveData<List<Movie>>) movies).setValue(value);
                     }
-                    status.setValue(Codes.SUCCESS);
+                    status.setValue(Status.SUCCESS);
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<Movie>> call, Throwable t) {
                 movies = null;
-                status.setValue(Codes.ERROR);
+                status.setValue(Status.ERROR);
             }
         });
     }

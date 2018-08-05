@@ -1,5 +1,7 @@
 package com.ahmetroid.popularmovies.ui;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -8,19 +10,19 @@ import android.view.View;
 
 import com.ahmetroid.popularmovies.BuildConfig;
 import com.ahmetroid.popularmovies.R;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import mehdi.sakout.aboutpage.AboutPage;
 import mehdi.sakout.aboutpage.Element;
 
 public class AboutActivity extends AppCompatActivity {
 
-    public FirebaseAnalytics mFirebaseAnalytics;
+    public static Intent newIntent(Context context) {
+        return new Intent(context, AboutActivity.class);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         Element versionElement = new Element();
         versionElement.setTitle("Version " + BuildConfig.VERSION_NAME);
@@ -29,8 +31,8 @@ public class AboutActivity extends AppCompatActivity {
                 .isRTL(false)
                 .setImage(R.drawable.ic_themoviedb)
                 .setDescription(getString(R.string.description))
-                .addEmail("cinemateapp.tr@gmail.com")
-                .addInstagram("cinemateapp")
+                .addEmail("ahmetturk.pc@gmail.com")
+                .addInstagram("sinemateapp")
                 .addPlayStore("com.ahmetroid.popularmovies")
                 .addGitHub("ahmetturk")
                 .addItem(versionElement)

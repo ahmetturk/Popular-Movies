@@ -13,6 +13,7 @@ android {
     defaultConfig {
         applicationId "com.ahmetroid.popularmovies"
         minSdkVersion 16
+        //noinspection OldTargetApi
         targetSdkVersion 27
         versionCode 9
         versionName '1.3'

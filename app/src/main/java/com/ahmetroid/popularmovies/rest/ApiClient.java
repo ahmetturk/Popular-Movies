@@ -35,8 +35,8 @@ public interface ApiClient {
 
     @GET("search/movie")
     Call<ApiResponse<Movie>> getSearchMovies(@Query("language") String language,
-                                            @Query("page") String page,
-                                            @Query("query") String query);
+                                             @Query("page") String page,
+                                             @Query("query") String query);
 
     @GET("movie/{id}/reviews")
     Call<ApiResponse<Review>> getReviews(@Path("id") String id);

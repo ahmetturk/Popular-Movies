@@ -1,8 +1,8 @@
 package com.ahmetroid.popularmovies.adapter;
 
 public class PagerItem {
-    private String title;
-    private int sortingCode;
+    private final String title;
+    private final int sortingCode;
 
 
     public PagerItem(String title, int sortingCode) {

@@ -3,7 +3,6 @@
     <string name="app_name">Sinemate</string>
 
     <!--Shared Preferences key-->
-    <string name="pref_changed_movie" translatable="false">changed_movie</string>
 
     <!--Menu item name for sorting spinner-->
     <string name="action_share">Share</string>
@@ -26,7 +25,6 @@
 
     <string name="no_internet">No internet connection, swipe to refresh</string>
     <string name="no_favorite">You have no favorite movie. When you add a movie to favorites, you can find it here even if you don\'t have an internet.</string>
-    <string name="not_this_star">Enter a movie, then click the star there :)</string>
     <string name="no_app">There is not any sharing app installed on device</string>
 
     <string name="add_favorite">Added to favorites</string>
@@ -69,8 +67,6 @@
     <string name="thriller">Thriller</string>
     <string name="war">War</string>
     <string name="western">Western</string>
-    <string name="dialog_title">Under Development</string>
-    <string name="dialog_message">This feature will be added in next update</string>
     <string name="press_again">Press again to exit</string>
 
     <string name="share_text">%1$s \nthemoviedb.org/movie/%2$s \n\nDownload Sinemate: onelink.to/zxmp8t</string>

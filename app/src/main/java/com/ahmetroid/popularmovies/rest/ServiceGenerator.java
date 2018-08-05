@@ -31,7 +31,6 @@ public class ServiceGenerator {
                     return chain.proceed(request);
                 }
             })
-            //.addNetworkInterceptor(new StethoInterceptor())
             .build();
 
     private static final Retrofit.Builder builder =
