@@ -1,10 +1,12 @@
 package com.ahmetroid.popularmovies.ui;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -13,9 +15,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.ahmetroid.popularmovies.R;
@@ -25,6 +29,9 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 import static com.ahmetroid.popularmovies.utils.Codes.ADMOB_APP_ID;
@@ -99,6 +106,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                 });
 
         navigationView.setCheckedItem(getCheckedItem());
+
+        CheckInternetAsyncTask asyncTask = new CheckInternetAsyncTask();
+        asyncTask.execute();
     }
 
     abstract ArrayList<PagerItem> getPagerItems();
@@ -150,5 +160,39 @@ public abstract class BaseActivity extends AppCompatActivity {
             return;
         }
         super.onBackPressed();
+    }
+
+    private class CheckInternetAsyncTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                URL url = new URL("https://www.google.com/");
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setConnectTimeout(1000);
+                urlConnection.connect();
+                return urlConnection.getResponseCode() == 200;
+            } catch (IOException e) {
+                Log.e(BaseActivity.class.getSimpleName(), "Error checking internet connection");
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isConnected) {
+            if (!isConnected) {
+                final Snackbar snackbar = Snackbar.make(mDrawerLayout,
+                        getString(R.string.no_internet_connection),
+                        Snackbar.LENGTH_INDEFINITE);
+
+                snackbar.setAction(R.string.dismiss, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        snackbar.dismiss();
+                    }
+                })
+                        .show();
+            }
+        }
     }
 }

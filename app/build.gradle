@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'popularmovieskey'
             keyPassword '28rcetencha'
-            storeFile file('C:/Users/ahmet/keystores/android.jks')
+            storeFile file('android.jks')
             storePassword '34cswhbo'
         }
     }

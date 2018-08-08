@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "48237800769",
+    "firebase_url": "https://cinemate-909e4.firebaseio.com",
+    "project_id": "cinemate-909e4",
+    "storage_bucket": "cinemate-909e4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48237800769:android:35e3bb79896536f1",
+        "android_client_info": {
+          "package_name": "com.ahmetroid.popularmovies"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "48237800769-2297c1uu8mcdva4k5tkvur7iag4eeva4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ahmetroid.popularmovies",
+            "certificate_hash": "d09566a5d460a5e21e4404db8a69a977b8cdefc0"
+          }
+        },
+        {
+          "client_id": "48237800769-fo1skpbuihh4s8id6dmq6v54ujtrklkn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgecBg74fqh1x4NuT_-vFD3AYrZPFtUXc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "48237800769-fo1skpbuihh4s8id6dmq6v54ujtrklkn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

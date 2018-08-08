@@ -104,6 +104,7 @@
             android:focusable="true"
             android:onClick="@{() -> presenter.onClickFavoriteButton()}"
             app:layout_anchor="@+id/appbar"
+            android:contentDescription="@string/cd_favorite"
             app:layout_anchorGravity="end|right|bottom" />
 
         <com.google.android.gms.ads.AdView

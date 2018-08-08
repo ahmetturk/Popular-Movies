@@ -73,4 +73,7 @@
 
     <string name="search_title">\"%1$s\" Results</string>
     <string name="widget_title">Popular Movies</string>
+
+    <string name="no_internet_connection">No internet connection!</string>
+    <string name="dismiss">Dismiss</string>
 </resources>

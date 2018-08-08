@@ -52,4 +52,6 @@
     <string name="share_text">%1$s \nthemoviedb.org/movie/%2$s \n\nSinemate İndir: onelink.to/zxmp8t</string>
     <string name="search_title">"%1$s" Sonuçları</string>
     <string name="widget_title">Popüler Filmler</string>
+    <string name="no_internet_connection">İnternet bağlantısı yok!</string>
+    <string name="dismiss">Kaybol</string>
 </resources>
