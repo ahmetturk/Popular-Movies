@@ -20,6 +20,7 @@
     <dimen name="margin_small">8dp</dimen>
     <dimen name="margin_medium">16dp</dimen>
     <dimen name="margin_large">24dp</dimen>
+    <dimen name="margin_very_large">24dp</dimen>
 
     <dimen name="video_item_width">208dp</dimen>
     <dimen name="video_item_height">117dp</dimen>
@@ -37,4 +38,11 @@
     <dimen name="text_size_item">12sp</dimen>
 
     <dimen name="widget_margin">8dp</dimen>
+
+    <dimen name="status_image_size">112dp</dimen>
+    <dimen name="status_image_top_margin">100dp</dimen>
+    <dimen name="status_text_size">14sp</dimen>
+
+    <dimen name="nav_header_height">192dp</dimen>
+    <dimen name="nav_header_image_size">64dp</dimen>
 </resources>
