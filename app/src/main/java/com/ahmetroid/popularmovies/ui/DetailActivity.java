@@ -35,7 +35,6 @@ import com.ahmetroid.popularmovies.rest.ApiClient;
 import com.ahmetroid.popularmovies.rest.ServiceGenerator;
 import com.ahmetroid.popularmovies.utils.Codes;
 import com.ahmetroid.popularmovies.utils.HorizontalItemDecoration;
-import com.ahmetroid.popularmovies.utils.MainThreadExecutor;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -44,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -82,7 +82,7 @@ public class DetailActivity extends AppCompatActivity {
         mDatabase = AppDatabase.getDatabase(this);
 
         mApiClient = ServiceGenerator.createService(ApiClient.class);
-        diskIO = new MainThreadExecutor();
+        diskIO = Executors.newSingleThreadExecutor();
 
         Intent intent = getIntent();
         movie = intent.getParcelableExtra(DETAIL_INTENT_KEY);

@@ -32,7 +32,7 @@ public class AboutActivity extends AppCompatActivity {
                 .setImage(R.drawable.ic_themoviedb)
                 .setDescription(getString(R.string.description))
                 .addEmail("ahmetturk.pc@gmail.com")
-                .addInstagram("sinemateapp")
+                .addInstagram("ahmetturk3")
                 .addPlayStore("com.ahmetroid.popularmovies")
                 .addGitHub("ahmetturk")
                 .addItem(versionElement)

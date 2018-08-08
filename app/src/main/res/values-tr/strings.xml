@@ -51,4 +51,5 @@
     <string name="press_again">Çıkmak için tekrar bas</string>
     <string name="share_text">%1$s \nthemoviedb.org/movie/%2$s \n\nSinemate İndir: onelink.to/zxmp8t</string>
     <string name="search_title">"%1$s" Sonuçları</string>
+    <string name="widget_title">Popüler Filmler</string>
 </resources>

@@ -8,11 +8,11 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:fullBackupContent="@xml/backup_descriptor"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".ui.MovieListActivity"
@@ -35,6 +35,19 @@
         <activity android:name=".ui.AboutActivity" />
         <activity android:name=".ui.ReviewActivity" />
         <activity android:name=".ui.SearchActivity" />
+
+        <receiver android:name=".widget.SinemateAppWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/sinemate_app_widget_info" />
+        </receiver>
+        <service
+            android:name=".widget.SinemateRemoteViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

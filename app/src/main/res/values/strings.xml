@@ -72,4 +72,5 @@
     <string name="share_text">%1$s \nthemoviedb.org/movie/%2$s \n\nDownload Sinemate: onelink.to/zxmp8t</string>
 
     <string name="search_title">\"%1$s\" Results</string>
+    <string name="widget_title">Popular Movies</string>
 </resources>
