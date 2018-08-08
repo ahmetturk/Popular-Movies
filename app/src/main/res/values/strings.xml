@@ -76,4 +76,6 @@
 
     <string name="no_internet_connection">No internet connection!</string>
     <string name="dismiss">Dismiss</string>
+
+    <string name="version" translatable="false">Version %1$s</string>
 </resources>
